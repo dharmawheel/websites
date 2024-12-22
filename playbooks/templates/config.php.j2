@@ -1,0 +1,23 @@
+<?php
+# {{ ansible_managed }}
+
+$dbms = 'phpbb\\db\\driver\\mysqli';
+# RDS
+$dbhost = '{{ mariadb_host }}';
+$dbport = '3306';
+$dbname = '{{ phpbb_db_name }}';
+$dbuser = '{{ phpbb_db_user }}';
+$dbpasswd = '{{ phpbb_db_pass }}';
+$table_prefix = '{{ phpbb_table_prefix }}';
+$load_extensions = '';
+
+# Redis
+$acm_type = 'phpbb\\cache\\driver\\redis';
+@define('PHPBB_ACM_REDIS_HOST', '{{ redis_host }}');
+@define('PHPBB_ACM_REDIS_PORT', 6379);
+
+@define('PHPBB_INSTALLED', true);
+# @define('DEBUG', true);
+# @define('DEBUG_EXTRA', true);
+error_reporting(0);
+?>

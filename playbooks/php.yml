@@ -1,0 +1,69 @@
+- name: Configure PHP and php-fpm
+  hosts: dw-mono
+  become: true
+  vars:
+    php_fpm_socket: /run/php-fpm/www.sock
+    redis_port: 6379
+  tasks:
+    - name: Configure file uploads
+      ansible.builtin.copy:
+        dest: /etc/php.d/99-file-upload-size.ini
+        content: |
+          upload_max_filesize=100M
+          post_max_size=101M
+          max_file_uploads=50
+        mode: "0644"
+
+    - name: Trust X-Forwarded-For
+      ansible.builtin.copy:
+        dest: /etc/php.d/99-trust-x-forwarded-for.ini
+        content: |
+          fastcgi.param_override = 1
+        mode: "0644"
+
+    - name: Patch php-fpm's systemd service file
+      ansible.builtin.copy:
+        dest: /etc/systemd/system/php-fpm.service.d/override.conf
+        content: |
+          [Service]
+          Restart=always
+          RestartSec=5
+        mode: "0644"
+      notify: Reload systemd
+
+    - name: Copy php-fpm.conf
+      ansible.builtin.copy:
+        src: files/php-fpm.conf
+        dest: /etc/php-fpm.conf
+        mode: "0644"
+      notify: Restart php-fpm
+
+    - name: Render www.conf
+      ansible.builtin.template:
+        src: www.conf.j2
+        dest: /etc/php-fpm.d/www.conf
+        mode: "0644"
+      notify: Restart php-fpm
+
+    - name: Set php-fpm upstream for nginx
+      ansible.builtin.copy:
+        dest: /etc/nginx/conf.d/php-fpm.conf
+        content: |
+          upstream php-fpm {
+            server unix:{{ php_fpm_socket }};
+          }
+        mode: "0644"
+      notify: Restart nginx
+
+  handlers:
+    - name: Reload systemd
+      ansible.builtin.systemd:
+        daemon_reload: true
+    - name: Restart php-fpm
+      ansible.builtin.systemd:
+        name: php-fpm
+        state: restarted
+    - name: Restart nginx
+      ansible.builtin.systemd:
+        name: nginx
+        state: restarted

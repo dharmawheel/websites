@@ -1,0 +1,29 @@
+User-agent: PetalBot
+Disallow: /
+
+User-agent: facebookexternalhit
+Disallow: /
+
+User-agent: ClaudeBot
+Disallow: /
+
+User-agent: Bytespider
+Disallow: /
+
+User-agent: GPTBot
+Disallow: /
+
+User-agent: ChatGPT-User
+Disallow: /
+
+User-agent: dotbot
+Disallow: /
+
+User-agent: Barkrowler/0.9
+Disallow: /
+
+User-agent: MJ12bot
+Disallow: /
+
+User-agent: *
+Allow: /

@@ -1,0 +1,37 @@
+- name: Create temporary directory
+  ansible.builtin.tempfile:
+    state: directory
+    prefix: ffmpeg-static-
+  register: temp_dir
+
+- name: Download ffmpeg static binaries
+  ansible.builtin.get_url:
+    url: "{{ ffmpeg_static_build_url }}"
+    dest: "{{ temp_dir.path }}/ffmpeg.tar.gz"
+    mode: '0644'
+
+- name: Extract ffmpeg static binaries
+  ansible.builtin.unarchive:
+    src: "{{ temp_dir.path }}/ffmpeg.tar.gz"
+    dest: "/usr/local/"
+    remote_src: true
+    extra_opts:
+      - "--strip-components=1"
+    exclude:
+      - "LICENSE.txt"
+    owner: root
+    group: root
+
+- name: Set ffmpeg binary permissions
+  ansible.builtin.file:
+    path: "/usr/local/bin/{{ item }}"
+    mode: '0755'
+  loop:
+    - ffmpeg
+    - ffprobe
+    - ffplay
+
+- name: Remove temporary directory
+  ansible.builtin.file:
+    path: "{{ temp_dir.path }}"
+    state: absent

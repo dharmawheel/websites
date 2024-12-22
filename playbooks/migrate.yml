@@ -1,0 +1,15 @@
+- name: Migrate phpBB3 database
+  hosts: dw-mono
+  become: true
+  vars:
+    sites:
+      - com_dhammawheel_www
+      - net_dharmawheel_www
+      - com_dharmapaths_www
+  tasks:
+    - name: Run migration script
+      ansible.builtin.command:
+        cmd: |
+          php bin/phpbbcli.php db:migrate --safe-mode
+        chdir: "/var/www/{{ item }}"
+      loop: "{{ sites }}"

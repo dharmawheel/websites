@@ -1,0 +1,8 @@
+{% if S_USER_LOGGED_IN and S_DOWNLOADUSERPOSTS_IS_ALLOWED %}
+<dt>{{ lang('DOWNLOADUSERPOSTS_EXPORT_YOUR_DATA') }}</dt>
+<dd>
+  <a href="{{ U_DOWNLOADUSERPOSTS_DOWNLOAD_POSTS_ROUTE }}" rel="nofollow" target="_blank" class="button1">
+    {{ lang('DOWNLOADUSERPOSTS_DOWNLOAD_YOUR_POSTS') }}
+  </a>
+</dd>
+{% endif %}

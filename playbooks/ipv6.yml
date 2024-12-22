@@ -1,0 +1,81 @@
+- name: Setup IPv6 support
+  hosts: dw-mono
+  become: true
+  tasks:
+    - name: Configure legacy network settings for IPv6
+      # TODO: Is this necessary?
+      ansible.builtin.lineinfile:
+        path: /etc/sysconfig/network
+        line: "{{ item }}"
+      loop:
+        - "NETWORKING_IPV6=yes"
+        - "IPV6INIT=yes"
+    - name: Ensure IPv6 is enabled
+      ansible.posix.sysctl:
+        name: net.ipv6.conf.all.disable_ipv6
+        value: 0
+        state: present
+        reload: true
+    - name: Ensure IPv6 is not disabled in GRUB
+      ansible.builtin.lineinfile:
+        path: /etc/default/grub
+        regexp: '^GRUB_CMDLINE_LINUX="(.*)ipv6.disable=1(.*)"$'
+        line: 'GRUB_CMDLINE_LINUX="\1\2"'
+        backrefs: true
+      notify: Update GRUB
+    - name: Ensure cloud-init doesn't override IPv6 settings
+      ansible.builtin.copy:
+        dest: /etc/cloud/cloud.cfg.d/99-disable-network-config.cfg
+        content: |
+          network:
+            config: disabled
+        mode: "0644"
+        owner: root
+        group: root
+    - name: Create IPv6 network configuration file
+      ansible.builtin.copy:
+        dest: /etc/systemd/network/20-ipv6.network
+        content: |
+          [Match]
+          Name=en*
+          Name=eth*
+
+          [Network]
+          DHCP=ipv4
+          IPv6AcceptRA=yes
+          DHCPv6=yes
+
+          [DHCPv6]
+          UseAddress=yes
+          UseDNS=yes
+          UseNTP=yes
+
+          [IPv6AcceptRA]
+          UseAddress=yes
+          UseDNS=yes
+          UseAutonomousPrefix=yes
+        mode: "0644"
+        owner: root
+        group: root
+      notify:
+        - Reload systemd
+        - Restart systemd-networkd
+        - Restart systemd-resolved
+  handlers:
+    - name: Update GRUB
+      ansible.builtin.command: |
+        grub2-mkconfig -o /boot/grub2/grub.cfg
+      changed_when: false
+    - name: Reload systemd
+      ansible.builtin.systemd:
+        daemon_reload: true
+    - name: Restart systemd-resolved
+      ansible.builtin.systemd:
+        name: systemd-resolved
+        state: restarted
+        enabled: true
+    - name: Restart systemd-networkd
+      ansible.builtin.systemd:
+        name: systemd-networkd
+        state: restarted
+        enabled: true

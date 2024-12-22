@@ -1,0 +1,93 @@
+- name: Transfer application code
+  hosts: dw-mono
+  become: true
+  vars:
+    phpbb3:
+      - com_dhammawheel_www
+      - net_dharmawheel_www
+      - com_dharmapaths_www
+    mediawiki:
+      - com_dhammawiki_www
+  tasks:
+    - name: Copy phpBB3 directories
+      ansible.posix.synchronize:
+        src: "{{ playbook_dir }}/../{{ item }}"
+        dest: /var/www/
+      loop: "{{ phpbb3 }}"
+
+    - name: Render config.php for each site
+      ansible.builtin.template:
+        src: "config.php.j2"
+        dest: "/var/www/{{ item.site }}/config.php"
+        owner: nginx
+        group: nginx
+        mode: "0644"
+      loop:
+        - site: com_dhammawheel_www
+          phpbb_db_name: thedhamm_forum
+          phpbb_db_user: thedhamm_forumu
+          phpbb_db_pass: "{{ dhammawheel_db_pass }}"
+          phpbb_table_prefix: phpbb_
+        - site: net_dharmawheel_www
+          phpbb_db_name: thedhamm_dharmawheel
+          phpbb_db_user: thedhamm_dharmau
+          phpbb_db_pass: "{{ dharmawheel_db_pass }}"
+          phpbb_table_prefix: dharmawheel_
+        - site: com_dharmapaths_www
+          phpbb_db_name: "dharmapathsp"
+          phpbb_db_user: "dharmapaths"
+          phpbb_db_pass: "{{ dharmapaths_db_pass }}"
+          phpbb_table_prefix: phpbb_
+      loop_control:
+        label: "{{ item.site }}"
+      vars:
+        phpbb_db_name: "{{ item.phpbb_db_name }}"
+        phpbb_db_user: "{{ item.phpbb_db_user }}"
+        phpbb_db_pass: "{{ item.phpbb_db_pass }}"
+        phpbb_table_prefix: "{{ item.phpbb_table_prefix }}"
+
+    - name: Copy MediaWiki directories
+      ansible.posix.synchronize:
+        src: "{{ playbook_dir }}/../{{ item }}"
+        dest: /var/www/
+      loop: "{{ mediawiki }}"
+
+    - name: Render LocalSettings.php for MediaWiki
+      ansible.builtin.template:
+        src: "LocalSettings.php.j2"
+        dest: "/var/www/com_dhammawiki_www/LocalSettings.php"
+        owner: nginx
+        group: nginx
+        mode: "0644"
+
+    - name: Copy health check directory
+      ansible.posix.synchronize:
+        src: "{{ playbook_dir }}/../health"
+        dest: /var/www/
+
+    - name: Create empty /images directories
+      ansible.builtin.file:
+        state: directory
+        path: "/var/www/{{ item }}/images"
+        owner: nginx
+        group: nginx
+        mode: "0644"
+      loop: "{{ phpbb3 + mediawiki }}"
+
+    - name: Create empty /files directories for phpBB3 sites
+      ansible.builtin.file:
+        state: directory
+        path: "/var/www/{{ item }}/files"
+        owner: nginx
+        group: nginx
+        mode: "0777"
+      loop: "{{ phpbb3 }}"
+
+    - name: Create empty /cache directories for phpBB3 sites
+      ansible.builtin.file:
+        state: directory
+        path: "/var/www/{{ item }}/cache"
+        owner: nginx
+        group: nginx
+        mode: "0777"
+      loop: "{{ phpbb3 }}"

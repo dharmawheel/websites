@@ -1,0 +1,62 @@
+- name: Install dependencies from package manager
+  hosts: dw-mono
+  become: true
+  roles:
+    - role: ffmpeg
+    - role: build_lua
+  tasks:
+    - name: Install packages on Amazon Linux 2023
+      ansible.builtin.dnf:
+        name:
+          - nginx
+          - php-fpm
+          - php-mysqlnd
+          - amazon-efs-utils
+          - nfs-utils
+          - php-gd
+          - php-mbstring
+          - php-intl
+          - php-xml
+          - php-fileinfo
+          - php-sodium
+          - php-zip
+          - php-devel
+          - php-pear
+          - ImageMagick
+          - ImageMagick-devel
+          - gcc
+          - make
+          - readline-devel
+          - amazon-ssm-agent
+        state: present
+      vars:
+        build_lua_install_prefix: /opt/lua5_1_5
+    - name: Enable nginx
+      ansible.builtin.systemd:
+        name: nginx
+        state: started
+        enabled: true
+    - name: Enable php-fpm
+      ansible.builtin.systemd:
+        name: php-fpm
+        state: started
+        enabled: true
+    - name: Enable amazon-ssm-agent
+      ansible.builtin.systemd:
+        name: amazon-ssm-agent
+        state: started
+        enabled: true
+    - name: Install PHP redis
+      ansible.builtin.shell:
+        cmd: |
+          set -o pipefail \
+          && pecl update-channels \
+          && (yes '' | pecl install redis || true) \
+          && pecl list | grep redis | grep -q redis
+      changed_when: false
+    - name: Write PHP configuration
+      ansible.builtin.copy:
+        dest: /etc/php.d/50-redis.ini
+        content: |
+          extension=redis.so
+        mode: "0644"

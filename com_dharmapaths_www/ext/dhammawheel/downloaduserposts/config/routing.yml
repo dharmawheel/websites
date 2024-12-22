@@ -1,0 +1,3 @@
+dhammawheel_downloaduserposts_controller:
+    path: /downloaduserposts/download
+    defaults: { _controller: dhammawheel.downloaduserposts.controller.main:download }

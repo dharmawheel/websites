@@ -1,0 +1,145 @@
+- name: Configure nginx
+  hosts: dw-mono
+  become: true
+  vars:
+    cert_domains:
+      - dhammawheel.com
+      - dharmawheel.net
+      - dharmapaths.com
+      - dhammawiki.com
+    phpbb_sites:
+      - name: com_dhammawheel_www
+        domain: dhammawheel.com
+      - name: net_dharmawheel_www
+        domain: dharmawheel.net
+      - name: com_dharmapaths_www
+        domain: dharmapaths.com
+    mediawiki_sites:
+      - name: com_dhammawiki_www
+        domain: dhammawiki.com
+  tasks:
+    - name: Download Cloudflare Origin CA root certificate
+      ansible.builtin.get_url:
+        url: "https://developers.cloudflare.com/ssl/static/origin_ca_ecc_root.pem"
+        dest: /etc/pki/ca-trust/source/anchors/cloudflare_origin_ca.pem
+        checksum: "sha256:ca56c5b29918faf79046b1c1726c35d7715951a35445b2e63f56ea5a70b7af9c"
+        mode: "0644"
+      notify: Update CA trust
+
+    - name: Copy Diffie-Hellman parameters
+      ansible.builtin.copy:
+        src: files/dhparam.pem
+        dest: /etc/pki/tls/certs/dhparam.pem
+        owner: root
+        group: root
+        mode: "0600"
+
+    - name: Copy TLS certificates (origin certs from Cloudflare)
+      ansible.builtin.copy:
+        src: "files/certs/{{ item }}.pem"
+        dest: "/etc/pki/tls/certs/{{ item }}.pem"
+        owner: root
+        group: root
+        mode: "0644"
+      loop: "{{ cert_domains }}"
+
+    - name: Copy TLS private keys
+      ansible.builtin.copy:
+        src: "files/certs/{{ item }}.key"
+        dest: "/etc/pki/tls/private/{{ item }}.key"
+        owner: root
+        group: root
+        mode: "0600"
+      loop: "{{ cert_domains }}"
+
+    - name: Copy main nginx config
+      ansible.builtin.copy:
+        src: files/nginx.conf
+        dest: /etc/nginx/nginx.conf
+        mode: "0644"
+        owner: root
+        group: root
+      notify: Restart nginx
+
+    - name: Set max body size for nginx
+      ansible.builtin.copy:
+        dest: /etc/nginx/conf.d/99-file-upload-size.conf
+        content: |
+          client_max_body_size 100M;
+        mode: "0644"
+        owner: root
+        group: root
+      notify: Restart nginx
+
+    - name: Copy health check config
+      ansible.builtin.copy:
+        dest: /etc/nginx/default.d/http-health-check.conf
+        src: ./files/http-health-check.conf
+        mode: "0644"
+        owner: root
+        group: root
+      notify: Restart nginx
+
+    - name: Copy common phpBB3 configuration
+      ansible.builtin.copy:
+        dest: /etc/nginx/phpbb-common.conf
+        src: ./files/phpbb-common.conf
+        mode: "0644"
+        owner: root
+        group: root
+      notify: Restart nginx
+
+    - name: Render phpBB3 forum configs
+      ansible.builtin.template:
+        src: phpbb-site.conf.j2
+        dest: /etc/nginx/conf.d/{{ item.name }}.conf
+        mode: "0644"
+        owner: root
+        group: root
+      loop: "{{ phpbb_sites }}"
+      notify: Restart nginx
+
+    - name: Render MediaWiki site configs
+      ansible.builtin.template:
+        src: mediawiki-site.conf.j2
+        dest: /etc/nginx/conf.d/{{ item.name }}.conf
+        mode: "0644"
+        owner: root
+        group: root
+      loop: "{{ mediawiki_sites }}"
+      notify: Restart nginx
+
+    - name: Fetch list of Cloudflare IPv4s
+      ansible.builtin.uri:
+        url: https://www.cloudflare.com/ips-v4/
+        return_content: true
+      register: cloudflare_ipv4
+
+    - name: Fetch list of Cloudflare IPv6s
+      ansible.builtin.uri:
+        url: https://www.cloudflare.com/ips-v6/
+        return_content: true
+      register: cloudflare_ipv6
+
+    - name: Concatenate Cloudflare IP lists
+      ansible.builtin.set_fact:
+        cloudflare_ips: "{{ cloudflare_ipv4.content.split('\n') + cloudflare_ipv6.content.split('\n') }}"
+
+    - name: Render Cloudflare IP allow list
+      ansible.builtin.template:
+        src: real-ip.conf.j2
+        dest: /etc/nginx/conf.d/real-ip.conf
+        mode: "0644"
+      vars:
+        cidrs: "{{ cloudflare_ips }}"
+      notify: Restart nginx
+
+  handlers:
+    - name: Restart nginx
+      ansible.builtin.systemd:
+        name: nginx
+        state: restarted
+
+    - name: Update CA trust
+      ansible.builtin.command:
+        cmd: update-ca-trust

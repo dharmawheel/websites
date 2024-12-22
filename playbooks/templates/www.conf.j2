@@ -1,0 +1,45 @@
+; {{ ansible_managed }}
+
+[www]
+user = nginx
+group = nginx
+listen = {{ php_fpm_socket }}
+listen.owner = nginx
+listen.group = nginx
+listen.mode = 0660
+
+; Process Manager Configuration
+pm = dynamic
+pm.max_children = 500
+pm.start_servers = 10
+pm.min_spare_servers = 5
+pm.max_spare_servers = 15
+pm.max_requests = 500
+
+; Memory Limits
+php_admin_value[memory_limit] = 256M
+
+; Error Logging
+php_admin_flag[log_errors] = on
+php_admin_value[error_log] = /var/log/php-fpm/www-error.log
+
+; Timeouts
+request_terminate_timeout = 120s
+php_admin_value[max_execution_time] = 120
+
+; Session Handling
+php_value[soap.wsdl_cache_dir] = /var/lib/php/wsdlcache
+; Redis Session Handler
+php_value[session.save_handler] = redis
+php_value[session.save_path] = "tcp://{{ redis_host }}:{{ redis_port }}"
+php_value[session.gc_maxlifetime] = 1440
+php_value[redis.session.locking_enabled] = 1
+php_value[redis.session.lock_expire] = 60
+php_value[redis.session.lock_wait_time] = 10000
+php_value[redis.session.lock_retries] = 10
+
+; OpCache Settings
+php_admin_value[opcache.enable] = 1
+php_admin_value[opcache.memory_consumption] = 128
+php_admin_value[opcache.interned_strings_buffer] = 16
+php_admin_value[opcache.max_accelerated_files] = 10000

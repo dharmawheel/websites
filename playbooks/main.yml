@@ -1,0 +1,34 @@
+- name: Check prerequisites
+  hosts: dw-mono
+  become: true
+  tasks:
+    - name: Check OS
+      ansible.builtin.assert:
+        that:
+          - ansible_os_family == "RedHat"
+          - ansible_distribution == "Amazon"
+          - ansible_distribution_version == "2023"
+        msg: "This playbook is only compatible with Amazon Linux 2023"
+    - name: Check that secrets are accessible
+      ansible.builtin.assert:
+        that:
+          - dhammawheel_db_pass is defined
+          - dharmawheel_db_pass is defined
+          - dharmapaths_db_pass is defined
+        msg: "Secrets file is missing required variables"
+- name: Install packages
+  ansible.builtin.import_playbook: packages.yml
+- name: Copy application code
+  ansible.builtin.import_playbook: apps.yml
+- name: Set up IPv6
+  ansible.builtin.import_playbook: ipv6.yml
+- name: Set up nginx
+  ansible.builtin.import_playbook: nginx.yml
+- name: Set up PHP and php-fpm
+  ansible.builtin.import_playbook: php.yml
+- name: Mount EFS filesystems
+  ansible.builtin.import_playbook: efs.yml
+- name: Run phpBB3 database migrations
+  ansible.builtin.import_playbook: migrate.yml
+- name: Check health
+  ansible.builtin.import_playbook: verify.yml

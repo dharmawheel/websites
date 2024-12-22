@@ -1,0 +1,1149 @@
+/*
+ * Fonts
+ */
+
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@500&display=swap');
+
+/*
+--------------------------------------------------------------
+Colours and backgrounds for common.css
+-------------------------------------------------------------- */
+
+html, body {
+	color: #b8b8b8;
+	background-color: #1a1a1a;
+}
+
+h1 {
+	color: white;
+}
+
+h2 {
+	color: white;
+}
+
+h3 {
+	border-bottom-color: orange;
+	color: white;
+}
+
+hr {
+	border-color: orange;
+	border-top-color: white;
+}
+
+/*
+--------------------------------------------------------------
+Colours and backgrounds for links.css
+-------------------------------------------------------------- */
+
+a { color: #ff8700; }
+a:hover { color: #dd8600; }
+
+/* Links on gradient backgrounds */
+.forumbg .header a, .forabg .header a, th a {
+    color: #fff;
+}
+
+.forumbg .header a:hover, .forabg .header a:hover, th a:hover {
+	color: #fff;
+}
+0;86;46M0;86;46m
+/* Notification mark read link */
+.dropdown-extended a.mark_read {
+	background-color: black;
+}
+
+/* Post body links */
+.postlink {
+	border-bottom-color: orange;
+	color: lightblue;
+	text-decoration: underline;
+}
+
+.postlink:visited {
+	border-bottom-color: orange;
+	color: gray;
+}
+
+.postlink:hover {
+	background-color: black;
+	color: orange;
+}
+
+.signature a, .signature a:hover {
+	background-color: transparent;
+}
+
+/* Back to top of page */
+.top i {
+	color: #999999;
+}
+
+/* Arrow links  */
+.arrow-left:hover, .arrow-right:hover {
+	color: white;
+}
+
+/* Round cornered boxes and backgrounds
+---------------------------------------- */
+.wrap {
+	background-color: #000;
+}
+
+.headerbar {
+	background-color: #000;
+	font-weight: bold;
+	border: 1px solid orange;
+}
+
+.forumbg {
+	/* background-color: #342ead; */
+	color: black;
+	border: 1px solid orange;
+}
+
+.headerbar h1, .headerbar h2 {
+	color: #fff;
+	font-family: 'Roboto Slab', serif;
+	font-size: 3.3em;
+}
+
+.site-description p {
+	color: #fbfbfb;
+	font-family: 'Roboto Slab', serif;
+	font-size: 0.8rem;
+}
+
+.forabg {
+	background-color: #1f1f1f;
+}
+
+.navbar {
+	background-color: #000;
+}
+
+.panel {
+	background-color: #000;
+	color: white;
+}
+
+.post:target .content {
+	color: white;
+}
+
+.post h3 a.first-unread,
+.post:target h3 a {
+	color: white;
+}
+
+.bg1 {
+    background-color: rgb(63 63 63 / 10%);
+}
+
+table.zebra-list tr:nth-child(odd) td, ul.zebra-list li:nth-child(odd) {
+	background-color: rgb(63 63 63 / 10%);
+}
+
+.bg2 {
+    background-color: #040404;
+}
+
+table.zebra-list tr:nth-child(even) td, ul.zebra-list li:nth-child(even) {
+	background-color: black;
+}
+
+.bg3 {
+	background-color: black;
+}
+
+.ucprowbg {
+	background-color: black;
+}
+
+.fieldsbg {
+	background-color: black;
+}
+
+.site_logo {
+    display: inline-block;
+    background-image: url("./images/buddhism-forum.png");
+    background-repeat: no-repeat;
+    width: 100px;
+    height: 100px;
+}
+
+/* Horizontal lists
+----------------------------------------*/
+
+ul.navlinks {
+	border-top-color: orange;
+}
+
+/* Table styles
+----------------------------------------*/
+table.table1 thead th {
+	color: orange;
+}
+
+table.table1 tbody tr {
+	border-color: orange;
+}
+
+table.table1 tbody tr:hover, table.table1 tbody tr.hover {
+	background-color: black;
+	color: white;
+}
+
+table.table1 td {
+	color: white;
+}
+
+table.table1 tbody td {
+	border-top-color: #FAFAFA;
+}
+
+table.table1 tbody th {
+	border-bottom-color: #000000;
+	color: white;
+	background-color: black;
+}
+
+table.info tbody th {
+	color: white;
+}
+
+/* Misc layout styles
+---------------------------------------- */
+dl.details dt {
+	color: white;
+}
+
+dl.details dd {
+	color: white;
+}
+
+.sep {
+	color: white;
+}
+
+/* Icon styles
+---------------------------------------- */
+.icon.icon-blue, a:hover .icon.icon-blue {
+	color: white;
+}
+
+.icon.icon-green, a:hover .icon.icon-green {
+	color: white;
+}
+
+.icon.icon-red, a:hover .icon.icon-red {
+	color: white;
+}
+
+.icon.icon-orange, a:hover .icon.icon-orange {
+	color: white;
+}
+
+.icon.icon-bluegray, a:hover .icon.icon-bluegray {
+	color: white;
+}
+
+.icon.icon-gray, a:hover .icon.icon-gray {
+	color: white;
+}
+
+.icon.icon-lightgray, a:hover .icon.icon-lightgray {
+	color: #999999;
+}
+
+.icon.icon-black, a:hover .icon.icon-black {
+	color: white;
+}
+
+.alert_close .icon:before {
+	background-color: black;
+}
+
+/* Jumpbox */
+.jumpbox .dropdown li {
+	border-top-color: orangeC;
+}
+
+.jumpbox-cat-link {
+	background-color: orange;
+	border-top-color: orange;
+	color: white;
+}
+
+.jumpbox-cat-link:hover {
+	background-color: orange;
+	border-top-color: orange;
+	color: #FFFFFF;
+}
+
+.jumpbox-forum-link {
+	background-color: black;
+}
+
+.jumpbox-forum-link:hover {
+	background-color: black;
+}
+
+.jumpbox .dropdown .pointer-inner {
+	border-color: #E1EBF2 transparent;
+}
+
+.jumpbox-sub-link {
+	background-color: black;
+}
+
+.jumpbox-sub-link:hover {
+	background-color: black;
+}
+
+/* Miscellaneous styles
+---------------------------------------- */
+
+.copyright {
+	color: white;
+}
+
+.error {
+	color: yellow;
+}
+
+.reported {
+	background-color: black;
+}
+
+li.reported:hover {
+	background-color: black !important;
+}
+.sticky, .announce {
+	/* you can add a background for stickies and announcements*/
+}
+
+div.rules {
+	background-color: #1c1c1c;
+	color: white;
+}
+
+p.post-notice {
+	background-color: black;
+	background-image: none;
+}
+
+/*
+--------------------------------------------------------------
+Colours and backgrounds for content.css
+-------------------------------------------------------------- */
+
+ul.forums {
+	background-color: #000; /* Old browsers */ /* FF3.6+ */
+	/*background-image: -webkit-linear-gradient(top, #D2E0EB 0%, #EEF5F9 100%);*/
+	/*background-image: linear-gradient(to bottom, #eaeaea 0%,rgba(245, 247, 246, 0.12) 100%);*/ /* W3C */
+	/*filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#D2E0EB', endColorstr='#EEF5F9',GradientType=0 );*/ /* IE6-9 */
+}
+
+ul.topiclist li {
+	color: #fff;
+}
+
+ul.topiclist dd {
+	border-left-color: #868686;
+}
+
+.rtl ul.topiclist dd {
+	border-right-color: #868686;
+	border-left-color: transparent;
+}
+
+li.row {
+	border-top-color: #868686;
+	border-bottom-color: #868686;
+}
+
+li.row strong {
+	color: white;
+}
+
+li.row:hover {
+	background-color: rgba(234, 98, 39, 0.1);
+}
+
+li.row:hover dd {
+	border-left-color: #868686;
+}
+
+.rtl li.row:hover dd {
+	border-right-color: #868686;
+	border-left-color: transparent;
+}
+
+li.header dt, li.header dd {
+	color: white;
+}
+
+/* Post body styles
+----------------------------------------*/
+.postbody {
+	color: white;
+}
+
+/* Content container styles
+----------------------------------------*/
+.content {
+	color: #fff;
+}
+
+.content h2, .panel h2 {
+	color: white;
+	border-bottom-color: orange;
+}
+
+dl.faq dt {
+	color: white;
+}
+
+.posthilit {
+	background-color: #F3BFCC;
+	color: #BC2A4D;
+}
+
+.announce, .unreadpost {
+	/* Highlight the announcements & unread posts box */
+}
+
+/* Post signature */
+.signature {
+	border-top-color: #CCCCCC;
+}
+
+/* Post noticies */
+.notice {
+	border-top-color: #CCCCCC;
+}
+
+/* BB Code styles
+----------------------------------------*/
+/* Quote block */
+blockquote {
+	background-color: black;
+	border-color: orange;
+}
+
+blockquote blockquote {
+	/* Nested quotes */
+	background-color: black;
+}
+
+blockquote blockquote blockquote {
+	/* Nested quotes */
+	background-color: black;
+}
+
+/* Code block */
+.codebox {
+	background-color: darkgray;
+	border-color: orange;
+}
+
+.codebox p {
+	border-bottom-color: white;
+}
+
+.codebox code {
+	color: green;
+}
+
+/* Attachments
+----------------------------------------*/
+.attachbox {
+	background-color: black;
+	border-color: orange;
+}
+
+.pm-message .attachbox {
+	background-color: black;
+}
+
+.attachbox dd {
+	border-top-color: orange;
+}
+
+.attachbox p {
+	color: white;
+}
+
+.attachbox p.stats {
+	color: white;
+}
+
+.attach-image img {
+	border-color: orange;
+}
+
+/* Inline image thumbnails */
+
+dl.file dd {
+	color: white;
+}
+
+dl.thumbnail img {
+	border-color: orange;
+	background-color: black;
+}
+
+dl.thumbnail dd {
+	color: white;
+}
+
+dl.thumbnail dt a:hover {
+	background-color: black;
+}
+
+dl.thumbnail dt a:hover img {
+	border-color: orange;
+}
+
+/* Post poll styles
+----------------------------------------*/
+
+fieldset.polls dl {
+	border-top-color: orange;
+	color: white;
+}
+
+fieldset.polls dl.voted {
+        color: white;
+}
+
+fieldset.polls dd div {
+	color: white;
+}
+
+.rtl .pollbar1, .rtl .pollbar2, .rtl .pollbar3, .rtl .pollbar4, .rtl .pollbar5 {
+	border-right-color: transparent;
+}
+
+.pollbar1 {
+	background-color: black;
+	border-bottom-color: orange;
+	border-right-color: orange;
+}
+
+.rtl .pollbar1 {
+	border-left-color: orange;
+}
+
+.pollbar2 {
+	background-color: black;
+	border-bottom-color: orange;
+	border-right-color: orange;
+}
+
+.rtl .pollbar2 {
+	border-left-color: orange;
+}
+
+.pollbar3 {
+	background-color: black;
+	border-bottom-color: orange;
+	border-right-color: orange;
+}
+
+.rtl .pollbar3 {
+	border-left-color: orange;
+}
+
+.pollbar4 {
+	background-color: black;
+	border-bottom-color: orange;
+	border-right-color: orange;
+}
+
+.rtl .pollbar4 {
+	border-left-color: orange;
+}
+
+.pollbar5 {
+	background-color: black;
+	border-bottom-color: orange;
+	border-right-color: orange;
+}
+
+.rtl .pollbar5 {
+	border-left-color: orange;
+}
+
+/* Poster profile block
+----------------------------------------*/
+.postprofile {
+	color: white;
+}
+
+.pm .postprofile {
+	border-color: orange;
+}
+
+.postprofile strong {
+	color: white;
+}
+
+dd.profile-warnings {
+	color: white;
+}
+
+/*
+--------------------------------------------------------------
+Colours and backgrounds for buttons.css
+-------------------------------------------------------------- */
+.button {
+	border-color: orange;
+	background-color: black; /* Old browsers */ /* FF3.6+ */
+	color: white;
+}
+
+.button:hover,
+.button:focus {
+	border-color: orange;
+	background-color: black;
+}
+
+
+.button .icon,
+.button-secondary {
+	color: orange;
+}
+
+.button-secondary:focus,
+.button-secondary:hover,
+.button:focus .icon,
+.button:hover .icon {
+	color: orange;
+}
+
+.button-search:hover,
+.button-search-end:hover {
+	border-color: orange;
+}
+
+.caret	{ border-color: orange; }
+.caret	{ border-color: orange; }
+
+.contact-icons a	{ border-color: orange; }
+.contact-icons a:hover	{ background-color: white; }
+
+/* Pagination
+---------------------------------------- */
+
+.pagination li a {
+	background: black;
+	filter: none;
+	border-color: orange;
+	box-shadow: none;
+	-webkit-box-shadow: none;
+	color: white;
+}
+
+.pagination li.ellipsis span {
+	background: transparent;
+	color: white;
+}
+
+.pagination li.active span {
+	background: black;
+	border-color: orange;
+	color: white;
+}
+
+.pagination li a:hover, .pagination li a:hover .icon, .pagination .dropdown-visible a.dropdown-trigger, .nojs .pagination .dropdown-container:hover a.dropdown-trigger {
+	background: black;
+	border-color: orange;
+	filter: none;
+	color: white;
+	text-shadow: none;
+}
+
+/* Search box
+--------------------------------------------- */
+
+.search-box .inputbox,
+.search-box .inputbox:hover,
+.search-box .inputbox:focus {
+	border-color: orange;
+}
+
+.search-header {
+	box-shadow: 0 0 10px #a2b000;
+}
+
+/* Icon images
+---------------------------------------- */
+
+.contact-icon						{ background-image: url("./images/icons_contact.png"); }
+
+/* Profile & navigation icons */
+.pm-icon						{ background-position: 0 0; }
+.email-icon						{ background-position: -21px 0; }
+.jabber-icon						{ background-position: -80px 0; }
+.phpbb_icq-icon						{ background-position: -61px 0 ; }
+.phpbb_wlm-icon						{ background-position: -182px 0; }
+.phpbb_aol-icon						{ background-position: -244px 0; }
+.phpbb_website-icon					{ background-position: -40px 0; }
+.phpbb_youtube-icon					{ background-position: -98px 0; }
+.phpbb_facebook-icon					{ background-position: -119px 0; }
+.phpbb_skype-icon					{ background-position: -161px 0; }
+.phpbb_twitter-icon					{ background-position: -203px 0; }
+.phpbb_yahoo-icon					{ background-position: -224px 0; }
+
+/* Forum icons & Topic icons */
+.global_read						{ background-image: url("./images/announce_read.gif"); }
+.global_read_mine					{ background-image: url("./images/announce_read_mine.gif"); }
+.global_read_locked					{ background-image: url("./images/announce_read_locked.gif"); }
+.global_read_locked_mine				{ background-image: url("./images/announce_read_locked_mine.gif"); }
+.global_unread						{ background-image: url("./images/announce_unread.gif"); }
+.global_unread_mine					{ background-image: url("./images/announce_unread_mine.gif"); }
+.global_unread_locked					{ background-image: url("./images/announce_unread_locked.gif"); }
+.global_unread_locked_mine				{ background-image: url("./images/announce_unread_locked_mine.gif"); }
+
+.announce_read						{ background-image: url("./images/announce_read.gif"); }
+.announce_read_mine					{ background-image: url("./images/announce_read_mine.gif"); }
+.announce_read_locked					{ background-image: url("./images/announce_read_locked.gif"); }
+.announce_read_locked_mine				{ background-image: url("./images/announce_read_locked_mine.gif"); }
+.announce_unread					{ background-image: url("./images/announce_unread.gif"); }
+.announce_unread_mine					{ background-image: url("./images/announce_unread_mine.gif"); }
+.announce_unread_locked					{ background-image: url("./images/announce_unread_locked.gif"); }
+.announce_unread_locked_mine				{ background-image: url("./images/announce_unread_locked_mine.gif"); }
+
+.forum_link						{ background-image: url("./images/forum_link.gif"); }
+.forum_read						{ background-image: url("./images/forum_read.gif"); }
+.forum_read_locked					{ background-image: url("./images/forum_read_locked.gif"); }
+.forum_read_subforum					{ background-image: url("./images/forum_read_subforum.gif"); }
+.forum_unread						{ background-image: url("./images/forum_unread.gif"); }
+.forum_unread_locked					{ background-image: url("./images/forum_unread_locked.gif"); }
+.forum_unread_subforum					{ background-image: url("./images/forum_unread_subforum.gif"); }
+
+.sticky_read						{ background-image: url("./images/sticky_read.gif"); }
+.sticky_read_mine					{ background-image: url("./images/sticky_read_mine.gif"); }
+.sticky_read_locked					{ background-image: url("./images/sticky_read_locked.gif"); }
+.sticky_read_locked_mine				{ background-image: url("./images/sticky_read_locked_mine.gif"); }
+.sticky_unread						{ background-image: url("./images/sticky_unread.gif"); }
+.sticky_unread_mine					{ background-image: url("./images/sticky_unread_mine.gif"); }
+.sticky_unread_locked					{ background-image: url("./images/sticky_unread_locked.gif"); }
+.sticky_unread_locked_mine				{ background-image: url("./images/sticky_unread_locked_mine.gif"); }
+
+.topic_moved						{ background-image: url("./images/topic_moved.gif"); }
+.pm_read,
+.topic_read						{ background-image: url("./images/topic_read.gif"); }
+.topic_read_mine					{ background-image: url("./images/topic_read_mine.gif"); }
+.topic_read_hot						{ background-image: url("./images/topic_read_hot.gif"); }
+.topic_read_hot_mine					{ background-image: url("./images/topic_read_hot_mine.gif"); }
+.topic_read_locked					{ background-image: url("./images/topic_read_locked.gif"); }
+.topic_read_locked_mine					{ background-image: url("./images/topic_read_locked_mine.gif"); }
+.pm_unread,
+.topic_unread						{ background-image: url("./images/topic_unread.gif"); }
+.topic_unread_mine					{ background-image: url("./images/topic_unread_mine.gif"); }
+.topic_unread_hot					{ background-image: url("./images/topic_unread_hot.gif"); }
+.topic_unread_hot_mine					{ background-image: url("./images/topic_unread_hot_mine.gif"); }
+.topic_unread_locked					{ background-image: url("./images/topic_unread_locked.gif"); }
+.topic_unread_locked_mine				{ background-image: url("./images/topic_unread_locked_mine.gif"); }
+
+
+/*
+--------------------------------------------------------------
+Colours and backgrounds for cp.css
+-------------------------------------------------------------- */
+
+/* Main CP box
+----------------------------------------*/
+
+.panel-container h3, .panel-container hr, .cp-menu hr {
+	border-color: orange;
+}
+
+.panel-container .panel li.row {
+	border-bottom-color: orange;
+	border-top-color: orange;
+}
+
+ul.cplist {
+	border-top-color: orange;
+}
+
+.panel-container .panel li.header dd, .panel-container .panel li.header dt {
+	color: white;
+}
+
+.panel-container table.table1 thead th {
+	color: white;
+	border-bottom-color: white;
+}
+
+.cp-main .pm-message {
+	border-color: orange;
+	background-color: white;
+}
+
+/* CP tabbed menu
+----------------------------------------*/
+.tabs .tab > a {
+	background: black;
+	color: white;
+}
+
+.tabs .tab > a:hover {
+	background: black;
+	color: white;
+}
+
+.tabs .activetab > a,
+.tabs .activetab > a:hover {
+	background-color: black;
+	border-color: orange;
+	box-shadow: 0 1px 1px gray inset;
+	color: white;
+}
+
+.tabs .activetab > a:hover {
+	color: white;
+}
+
+/* Mini tabbed menu used in MCP
+----------------------------------------*/
+.minitabs .tab > a {
+	background-color: black;
+}
+
+.minitabs .activetab > a,
+.minitabs .activetab > a:hover {
+	background-color: black;
+	color: white;
+}
+
+/* Responsive tabs
+----------------------------------------*/
+.responsive-tab .responsive-tab-link:before {
+	border-color: orange;
+}
+
+.responsive-tab .responsive-tab-link:hover:before {
+	border-color: orange;
+}
+
+/* UCP navigation menu
+----------------------------------------*/
+
+/* Link styles for the sub-section links */
+.navigation a {
+	color: white;
+	background: black;
+}
+
+.rtl .navigation a {
+        background: black;
+}
+
+.navigation a:hover {
+	background: black;
+	color: white;
+}
+
+.navigation .active-subsection a {
+	background: black;
+	color: white;
+}
+
+.navigation .active-subsection a:hover {
+    color: white;
+}
+
+@media only screen and (max-width: 900px), only screen and (max-device-width: 900px)
+{
+	#navigation a, .rtl #navigation a {
+		background: black;
+	}
+}
+
+/* Preferences pane layout
+----------------------------------------*/
+.panel-container h2 {
+	color: white;
+}
+
+.panel-container .panel {
+	background-color: black;
+}
+
+.cp-main .pm {
+	background-color: black;
+}
+
+/* Friends list */
+.cp-mini {
+	background-color: black;
+}
+
+dl.mini dt {
+	color: white;
+}
+
+/* PM Styles
+----------------------------------------*/
+/* PM Message history */
+.current {
+	color: white !important;
+}
+
+/* PM marking colours */
+.pmlist li.pm_message_reported_colour, .pm_message_reported_colour {
+	border-left-color: orange;
+	border-right-color: orange;
+}
+
+.pmlist li.pm_marked_colour, .pm_marked_colour {
+	border-color: orange;
+}
+
+.pmlist li.pm_replied_colour, .pm_replied_colour {
+	border-color: orange;
+}
+
+.pmlist li.pm_friend_colour, .pm_friend_colour {
+	border-color: orange;
+}
+
+.pmlist li.pm_foe_colour, .pm_foe_colour {
+	border-color: orange;
+}
+
+/* Avatar gallery */
+.gallery label {
+	background: black;
+	border-color: orange;
+}
+
+.gallery label:hover {
+	background-color: black;
+}
+
+/*
+--------------------------------------------------------------
+Colours and backgrounds for forms.css
+-------------------------------------------------------------- */
+
+/* General form styles
+----------------------------------------*/
+select {
+	border-color: gray;
+	background-color: black;
+	color: white;
+}
+
+label {
+	color: white;
+}
+
+option.disabled-option {
+	color: graytext;
+}
+
+/* Definition list layout for forms
+---------------------------------------- */
+dd label {
+	color: white;
+}
+
+fieldset.fields1 {
+	background-color: transparent;
+}
+
+/* Hover effects */
+fieldset dl:hover dt label {
+	color: white;
+}
+
+fieldset.fields2 dl:hover dt label {
+	color: inherit;
+}
+
+/* Quick-login on index page */
+fieldset.quick-login input.inputbox {
+	background-color: black;
+}
+
+/* Posting page styles
+----------------------------------------*/
+
+.message-box textarea {
+    color: white;
+    background-color: black;
+}
+
+.message-box textarea.drag-n-drop {
+	outline-color: rgba(102, 102, 102, 0.5);
+}
+
+.message-box textarea.drag-n-drop-highlight {
+    outline-color: orange;
+}
+
+/* Input field styles
+---------------------------------------- */
+.inputbox {
+	background-color: black;
+	border-color: orange;
+	color: white;
+}
+
+.inputbox:-moz-placeholder {
+	color: white;
+}
+
+.inputbox::-webkit-input-placeholder {
+	color: white;
+}
+
+.inputbox:hover {
+	border-color: orange;
+}
+
+.inputbox:focus {
+	border-color: orange;
+}
+
+.inputbox:focus:-moz-placeholder {
+	color: transparent;
+}
+
+.inputbox:focus::-webkit-input-placeholder {
+	color: transparent;
+}
+
+
+/* Form button styles
+---------------------------------------- */
+
+a.button1, input.button1, input.button3, a.button2, input.button2 {
+	color: white;
+	background-color: black;
+}
+
+a.button1, input.button1 {
+	border-color: #666666;
+}
+
+input.button3 {
+	background-image: none;
+}
+
+/* Alternative button */
+a.button2, input.button2, input.button3 {
+	border-color: #666666;
+}
+
+/* <a> button in the style of the form buttons */
+a.button1, a.button2 {
+	color: white;
+}
+
+/* Hover states */
+a.button1:hover, input.button1:hover, a.button2:hover, input.button2:hover, input.button3:hover {
+	border-color: orange;
+	color: white;
+	background-color: black; /* Old browsers */ /* FF3.6+ */
+}
+
+/* Focus states */
+input.button1:focus, input.button2:focus, input.button3:focus {
+	border-color: orange;
+	color: white;
+}
+
+input.disabled {
+	color: gray;
+}
+
+/* jQuery popups
+---------------------------------------- */
+.phpbb_alert {
+	background-color: black;
+	border-color: orange;
+}
+.darken {
+	background-color: black;
+}
+
+.loading_indicator {
+	background-color: #000000;
+	background-image: url("./images/loading.gif");
+}
+
+.dropdown-extended ul li {
+	border-top-color: orange;
+}
+
+.dropdown-extended ul li:hover {
+	background-color: black;
+	color: white;
+}
+
+.dropdown-extended .header, .dropdown-extended .footer {
+	border-color: orange;
+	color: white;
+	background-color: black;
+}
+
+.dropdown-extended .footer {
+	border-top-style: solid;
+	border-top-width: 1px;
+}
+
+.dropdown-extended .header {
+	background-color: black;
+}
+
+.dropdown .pointer {
+	border-color: orange transparent;
+}
+
+.dropdown .pointer-inner {
+	border-color: orange transparent;
+}
+
+.dropdown-extended .pointer-inner {
+	border-color: orange transparent;
+}
+
+.dropdown .dropdown-contents {
+	background: black;
+	border-color: orange;
+}
+
+.dropdown-up .dropdown-contents {
+}
+
+.dropdown li, .dropdown li li {
+	border-color: orange;
+}
+
+.dropdown li.separator {
+	border-color: orange;
+}
+
+/* Notifications
+---------------------------------------- */
+
+.notification_list p.notification-time {
+	color: orange;
+}
+
+li.notification-reported strong, li.notification-disapproved strong {
+	color: orange;
+}
+
+.badge {
+	background-color: black;
+	color: white;
+}

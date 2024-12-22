@@ -1,0 +1,18 @@
+- name: Verify that the server works
+  hosts: dw-mono
+  tasks:
+    - name: Call health check endpoint
+      ansible.builtin.uri:
+        url: http://localhost/health
+        return_content: true
+      register: health_check
+
+    - name: Print health check response
+      ansible.builtin.debug:
+        var: health_check
+
+    - name: Assert that the health check was successful
+      ansible.builtin.assert:
+        that:
+          - health_check.status == 200
+          - health_check.json['overallStatus'] == 'UP'
