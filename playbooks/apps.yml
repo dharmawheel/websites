@@ -87,6 +87,7 @@
       ansible.builtin.file:
         state: directory
         path: "/var/www/{{ item }}/cache"
+        recurse: true
         owner: nginx
         group: nginx
         mode: "0777"
