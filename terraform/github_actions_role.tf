@@ -87,7 +87,14 @@ resource "aws_iam_policy" "github_actions_policy" {
         "ec2:DescribeVpcs",
         "ec2:DescribeSubnets",
         "ec2:DescribeInstanceTypeOfferings",
-        "ec2:DescribeAvailabilityZones"
+        "ec2:DescribeAvailabilityZones",
+        "ec2:DescribeVpcAttribute",
+        "ec2:DescribeVpcEndpoints",
+
+        "ec2:DescribeLaunchTemplates",
+        "ec2:DescribePrefixLists",
+        "ec2:DescribeNetworkInterfaces",
+        "ec2:DescribeLaunchTemplateVersions"
       ],
       "Resource": "*"
     },
@@ -100,7 +107,16 @@ resource "aws_iam_policy" "github_actions_policy" {
         "iam:CreateInstanceProfile",
         "iam:DeleteInstanceProfile",
         "iam:AddRoleToInstanceProfile",
-        "iam:RemoveRoleFromInstanceProfile"
+        "iam:RemoveRoleFromInstanceProfile",
+        "iam:ListRolePolicies",
+        "iam:ListAttachedRolePolicies",
+        "iam:GetUser",
+        "iam:GetRolePolicy",
+        "iam:ListAccessKeys",
+        "iam:GetPolicy",
+        "iam:ListEntitiesForPolicy",
+        "iam:GetPolicyVersion",
+        "iam:ListAttachedUserPolicies"
       ],
       "Resource": "*"
     },
@@ -108,7 +124,18 @@ resource "aws_iam_policy" "github_actions_policy" {
       "Effect": "Allow",
       "Action": [
         "autoscaling:StartInstanceRefresh",
-        "autoscaling:DescribeAutoScalingGroups"
+        "autoscaling:DescribeAutoScalingGroups",
+        "autoscaling:DescribeAutoScalingInstances",
+        "autoscaling:DescribeInstanceRefreshes",
+        "elasticloadbalancing:DescribeLoadBalancers",
+        "elasticloadbalancing:DescribeTargetGroups",
+        "elasticloadbalancing:DescribeLoadBalancerAttributes",
+        "elasticloadbalancing:DescribeTargetGroupAttributes",
+        "elasticloadbalancing:DescribeListeners",
+        "elasticloadbalancing:DescribeRules",
+        "elasticloadbalancing:DescribeTags",
+        "elasticloadbalancing:DescribeListenerAttributes",
+        "autoscaling:DescribePolicies"
       ],
       "Resource": "*"
     },
@@ -129,7 +156,10 @@ resource "aws_iam_policy" "github_actions_policy" {
         "dynamodb:GetItem",
         "dynamodb:DeleteItem",
         "dynamodb:UpdateItem",
-        "dynamodb:DescribeTable"
+        "dynamodb:DescribeTable",
+        "dynamodb:DescribeContinuousBackups",
+        "dynamodb:DescribeTimeToLive",
+        "dynamodb:ListTagsOfResource"
       ],
       "Resource": "${aws_dynamodb_table.tfstate_lock_table.arn}"
     },
