@@ -1,0 +1,105 @@
+name: Build and Deploy AMI
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    env:
+      PACKER_VERSION: "1.9.4"
+      TERRAFORM_VERSION: "1.9.6"
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-west-1
+
+      - name: Setup `packer`
+        uses: hashicorp/setup-packer@main
+        with:
+          version: ${{ env.PACKER_VERSION }}
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TERRAFORM_VERSION }}
+
+      - name: Initialize Packer
+        run: packer init ./dw-mono.pkr.hcl
+
+      - name: Validate Packer
+        run: packer validate dw-mono.pkr.hcl
+
+      - name: Initialize Terraform
+        working-directory: ./terraform
+        run: terraform init
+
+      - name: Validate Terraform
+        working-directory: ./terraform
+        run: terraform validate
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update && sudo apt-get install -y \
+            jq
+
+      - name: Install Ansible
+        run: |
+          python -m venv .venv && \
+            source .venv/bin/activate && \
+            .venv/bin/python -m pip install --upgrade pip && \
+            .venv/bin/pip install ansible ansible-lint && \
+            .venv/bin/ansible-galaxy collection install community.general ansible.posix
+
+      - name: Lint Ansible
+        run: |
+          ansible-lint playbooks/
+
+      - name: Expose Ansible Vault password
+        run: |
+          cat <<EOF > .vault_pass
+          #!/bin/sh
+          echo $ANSIBLE_VAULT_PASSWORD
+          EOF
+          chmod +x .vault_pass
+
+      - name: Build AMI with Packer
+        id: packer_build
+        env:
+          ANSIBLE_VAULT_PASSWORD: ${{ secrets.ANSIBLE_VAULT_PASSWORD }}
+        run: |
+          packer build dw-mono.pkr.hcl
+          AMI_ID=$(jq -r '.builds[-1].artifact_id' manifest.json | cut -d':' -f2)
+          echo "AMI_ID=${AMI_ID}" >> $GITHUB_OUTPUT
+
+      - name: Terraform plan
+        working-directory: ./terraform
+        run: |
+          AMI_ID="${{ steps.packer_build.outputs.AMI_ID }}"
+          terraform plan -var ami_id=$AMI_ID -out=tfplan
+
+      - name: Terraform apply
+        working-directory: ./terraform
+        run: terraform apply -auto-approve tfplan
+
+      - name: Start instance refresh
+        run: |
+          aws autoscaling start-instance-refresh \
+            --auto-scaling-group-name $(terraform output -json autoscaling_group_name | jq -r '.') \
+            --preferences MinHealthyPercentage=100,InstanceWarmup=300 \
+            --strategy Rolling
