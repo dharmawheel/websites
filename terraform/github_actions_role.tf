@@ -39,7 +39,10 @@ resource "aws_iam_policy" "github_actions_policy" {
         "ssm:ListInstanceAssociations",
         "ssm:UpdateInstanceInformation",
         "ssm:PutParameter",
-        "ssm:GetParameter"
+        "ssm:GetParameter",
+        "ssm:GetParameters",
+        "ssm:GetParameterHistory",
+        "ssm:DescribeParameters"
       ],
       "Resource": "*"
     },
@@ -48,16 +51,57 @@ resource "aws_iam_policy" "github_actions_policy" {
       "Action": [
         "ec2:RunInstances",
         "ec2:TerminateInstances",
-        "ec2:DescribeInstances"
+        "ec2:StopInstances",
+        "ec2:StartInstances",
+        "ec2:DescribeInstances",
+
+        "ec2:CreateImage",
+        "ec2:DescribeImages",
+        "ec2:DescribeImageAttribute",
+        "ec2:ModifyImageAttribute",
+        "ec2:RegisterImage",
+        "ec2:DeregisterImage",
+
+        "ec2:CreateSnapshot",
+        "ec2:DeleteSnapshot",
+        "ec2:DescribeSnapshots",
+
+        "ec2:CreateTags",
+        "ec2:DeleteTags",
+        "ec2:DescribeTags",
+
+        "ec2:CreateKeyPair",
+        "ec2:DeleteKeyPair",
+        "ec2:DescribeKeyPairs",
+
+        "ec2:CreateSecurityGroup",
+        "ec2:AuthorizeSecurityGroupIngress",
+        "ec2:AuthorizeSecurityGroupEgress",
+        "ec2:RevokeSecurityGroupIngress",
+        "ec2:RevokeSecurityGroupEgress",
+        "ec2:DeleteSecurityGroup",
+        "ec2:DescribeSecurityGroups",
+
+        "ec2:DescribeRegions",
+        "ec2:DescribeVpcs",
+        "ec2:DescribeSubnets",
+        "ec2:DescribeInstanceTypeOfferings",
+        "ec2:DescribeAvailabilityZones"
       ],
       "Resource": "*"
     },
     {
       "Effect": "Allow",
       "Action": [
-        "iam:*"
+        "iam:PassRole",
+        "iam:GetRole",
+        "iam:GetInstanceProfile",
+        "iam:CreateInstanceProfile",
+        "iam:DeleteInstanceProfile",
+        "iam:AddRoleToInstanceProfile",
+        "iam:RemoveRoleFromInstanceProfile"
       ],
-      "Resource": "${aws_iam_instance_profile.packer_builder.arn}"
+      "Resource": "*"
     },
     {
       "Effect": "Allow",
@@ -80,9 +124,20 @@ resource "aws_iam_policy" "github_actions_policy" {
     {
       "Effect": "Allow",
       "Action": [
-        "dynamodb:*"
+        "dynamodb:PutItem",
+        "dynamodb:GetItem",
+        "dynamodb:DeleteItem",
+        "dynamodb:UpdateItem",
+        "dynamodb:DescribeTable"
       ],
       "Resource": "${aws_dynamodb_table.tfstate_lock_table.arn}"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "sts:GetCallerIdentity"
+      ],
+      "Resource": "*"
     }
   ]
 }
