@@ -16,12 +16,10 @@
       changed_when: false
       loop: "{{ sites }}"
 
-    - name: Set nginx to owner of cache, files, images, and store directories
-      ansible.builtin.command:
-        cmd: |
-          chown -R nginx:nginx /var/www/{{ item }}/cache
-          chown -R nginx:nginx /var/www/{{ item }}/files
-          chown -R nginx:nginx /var/www/{{ item }}/images
-          chown -R nginx:nginx /var/www/{{ item }}/store
-      changed_when: false
-      loop: "{{ sites }}"
+    - name: Ensure nginx owns entire /var/www/*
+      ansible.builtin.file:
+        path: "/var/www"
+        state: directory
+        owner: nginx
+        group: nginx
+        recurse: true
