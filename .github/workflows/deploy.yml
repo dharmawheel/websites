@@ -67,16 +67,9 @@ jobs:
             .venv/bin/ansible-galaxy collection install community.general ansible.posix
 
       - name: Expose Ansible Vault password
-        run: |
-          cat <<EOF > .vault_pass
-          #!/bin/sh
-          echo $ANSIBLE_VAULT_PASSWORD
-          EOF
-          chmod +x .vault_pass
+        run: echo "${{ secrets.ANSIBLE_VAULT_PASSWORD }}" > .vault_pass
 
       - name: Lint Ansible
-        env:
-          ANSIBLE_VAULT_PASSWORD: ${{ secrets.ANSIBLE_VAULT_PASSWORD }}
         run: |
           source .venv/bin/activate && \
             .venv/bin/ansible-lint --version && \
@@ -84,8 +77,6 @@ jobs:
 
       - name: Build AMI with Packer
         id: packer_build
-        env:
-          ANSIBLE_VAULT_PASSWORD: ${{ secrets.ANSIBLE_VAULT_PASSWORD }}
         run: |
           source .venv/bin/activate
           packer build dw-mono.pkr.hcl
