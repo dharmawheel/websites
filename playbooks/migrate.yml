@@ -15,7 +15,3 @@
         chdir: "/var/www/{{ item }}"
       changed_when: false
       loop: "{{ sites }}"
-
-    - name: Pause for 10 seconds
-      ansible.builtin.pause:
-        seconds: 10
