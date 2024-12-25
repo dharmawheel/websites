@@ -54,6 +54,7 @@ resource "aws_iam_policy" "github_actions_policy" {
         "ec2:StopInstances",
         "ec2:StartInstances",
         "ec2:DescribeInstances",
+        "ec2:DescribeVolumes",
 
         "ec2:CreateImage",
         "ec2:DescribeImages",
