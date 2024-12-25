@@ -12,4 +12,5 @@
         cmd: |
           php bin/phpbbcli.php db:migrate --safe-mode
         chdir: "/var/www/{{ item }}"
+      changed_when: false
       loop: "{{ sites }}"

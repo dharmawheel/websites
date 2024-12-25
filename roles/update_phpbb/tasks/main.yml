@@ -18,8 +18,13 @@
 
 - name: Fetch phpBB3 patch files
   ansible.builtin.get_url:
-    url: "https://download.phpbb.com/pub/release/{{ update_phpbb_next_version.split('.')[:2] | join('.') }}/{{ update_phpbb_next_version }}/phpBB-{{ update_phpbb_next_version }}-patch.tar.bz2"
+    url: >-
+      https://download.phpbb.com/pub/release/
+      {{ update_phpbb_next_version.split('.')[:2] | join('.') }}/
+      {{ update_phpbb_next_version }}/
+      phpBB-{{ update_phpbb_next_version }}-patch.tar.bz2
     dest: "{{ phpbb_patch_dir.path }}/phpbb.tar.bz2"
+    mode: "0644"
 
 - name: Extract phpBB3 patch files
   ansible.builtin.unarchive:
@@ -43,10 +48,7 @@
       - vendor/
 
 - name: Apply phpBB3 patch
-  ansible.builtin.shell:
-    cmd: |
-      patch -cl -d . -p1 < {{ phpbb_patch_dir.path }}/phpBB-{{ update_phpbb_current_version }}_to_{{ update_phpbb_next_version }}.patch
-    chdir: "{{ role_path }}/../../{{ update_phpbb_site }}"
-  register: phpbb_patch_result
-  failed_when:
-    - phpbb_patch_result.rc != 0
+  ansible.posix.patch:
+    basedir: "{{ role_path }}/../../{{ update_phpbb_site }}"
+    src: "{{ phpbb_patch_dir.path }}/phpBB-{{ update_phpbb_current_version }}_to_{{ update_phpbb_next_version }}.patch"
+    state: present
