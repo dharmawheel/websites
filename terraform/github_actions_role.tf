@@ -94,7 +94,8 @@ resource "aws_iam_policy" "github_actions_policy" {
         "ec2:DescribeLaunchTemplates",
         "ec2:DescribePrefixLists",
         "ec2:DescribeNetworkInterfaces",
-        "ec2:DescribeLaunchTemplateVersions"
+        "ec2:DescribeLaunchTemplateVersions",
+        "ec2:CreateLaunchTemplateVersion"
       ],
       "Resource": "*"
     },
