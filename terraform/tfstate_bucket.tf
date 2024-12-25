@@ -13,10 +13,8 @@ resource "aws_dynamodb_table" "tfstate_lock_table" {
     enabled = "false"
   }
 
-  read_capacity  = "5"
   stream_enabled = "false"
   table_class    = "STANDARD"
-  write_capacity = "5"
 }
 
 resource "aws_s3_bucket" "tfstate_bucket" {
