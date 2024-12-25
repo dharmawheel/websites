@@ -58,7 +58,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update && sudo apt-get install -y \
-            jq tar gzip rsync git curl unzip \
+            tar gzip rsync git curl unzip \
             zstd xz-utils bzip2
 
       - name: Install Ansible
@@ -103,8 +103,9 @@ jobs:
         run: terraform apply -auto-approve tfplan
 
       - name: Start instance refresh
+        working-directory: ./terraform
         run: |
           aws autoscaling start-instance-refresh \
-            --auto-scaling-group-name $(terraform output -json autoscaling_group_name | jq -r '.') \
+            --auto-scaling-group-name $(terraform output -raw autoscaling_group_name) \
             --preferences MinHealthyPercentage=100,InstanceWarmup=300 \
             --strategy Rolling
