@@ -1,0 +1,67 @@
+imports:
+    - { resource: tables.yml }
+
+services:
+    phpbb.wpn.form_helper:
+        class: phpbb\webpushnotifications\form\form_helper
+        arguments:
+            - '@config'
+            - '@request'
+            - '@user'
+
+    phpbb.wpn.listener:
+        class: phpbb\webpushnotifications\event\listener
+        arguments:
+            - '@config'
+            - '@controller.helper'
+            - '@upload_imagesize'
+            - '@phpbb.wpn.form_helper'
+            - '@language'
+            - '@template'
+            - '@user'
+            - '@notification_manager'
+            - '%core.root_path%'
+        tags:
+            - { name: event.listener }
+
+    notification.method.phpbb.wpn.webpush:
+        class: phpbb\webpushnotifications\notification\method\webpush
+        shared: false
+        arguments:
+            - '@config'
+            - '@dbal.conn'
+            - '@log'
+            - '@user_loader'
+            - '@user'
+            - '@path_helper'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+            - '%tables.phpbb.wpn.notification_push%'
+            - '%tables.phpbb.wpn.push_subscriptions%'
+        tags:
+            - { name: notification.method }
+
+    phpbb.wpn.ucp.controller.webpush:
+        class: phpbb\webpushnotifications\ucp\controller\webpush
+        arguments:
+            - '@config'
+            - '@controller.helper'
+            - '@dbal.conn'
+            - '@phpbb.wpn.form_helper'
+            - '@language'
+            - '@notification_manager'
+            - '@path_helper'
+            - '@request'
+            - '@user_loader'
+            - '@user'
+            - '@template.twig.environment'
+            - '%tables.phpbb.wpn.notification_push%'
+            - '%tables.phpbb.wpn.push_subscriptions%'
+
+    phpbb.wpn.controller.manifest:
+        class: phpbb\webpushnotifications\controller\manifest
+        arguments:
+            - '@config'
+            - '@language'
+            - '@path_helper'
+            - '@user'

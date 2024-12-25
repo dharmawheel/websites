@@ -1,5 +1,7 @@
 # Dhamma Wheel, Dharma Wheel, Dhamma Wiki
 
+[![Deploy](https://github.com/dharmawheel/websites/actions/workflows/deploy.yml/badge.svg)](https://github.com/dharmawheel/websites/actions/workflows/deploy.yml)
+
 This powers the largest English-language Buddhism forums (est. 2008).
 
 - [Dhamma Wheel, Theravada Buddhist forum](https://www.dhammawheel.com/)
