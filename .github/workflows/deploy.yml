@@ -68,7 +68,9 @@ jobs:
 
       - name: Lint Ansible
         run: |
-          ansible-lint playbooks/
+          source .venv/bin/activate && \
+            .venv/bin/ansible-lint --version && \
+            .venv/bin/ansible-lint playbooks/
 
       - name: Expose Ansible Vault password
         run: |
@@ -83,6 +85,7 @@ jobs:
         env:
           ANSIBLE_VAULT_PASSWORD: ${{ secrets.ANSIBLE_VAULT_PASSWORD }}
         run: |
+          source .venv/bin/activate
           packer build dw-mono.pkr.hcl
           AMI_ID=$(jq -r '.builds[-1].artifact_id' manifest.json | cut -d':' -f2)
           echo "AMI_ID=${AMI_ID}" >> $GITHUB_OUTPUT
