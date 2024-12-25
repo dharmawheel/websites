@@ -37,10 +37,7 @@ resource "aws_iam_policy" "github_actions_policy" {
     {
       "Effect": "Allow",
       "Action": [
-        "ec2:DescribeInstances",
-        "ec2:ModifyLaunchTemplate",
-        "ec2:DescribeLaunchTemplates",
-        "ec2:DescribeRegions"
+        "ec2:*"
       ],
       "Resource": "*"
     },
