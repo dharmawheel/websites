@@ -30,16 +30,34 @@ resource "aws_iam_policy" "github_actions_policy" {
         "ssm:ListCommandInvocations",
         "ssm:GetCommandInvocation",
         "ssm:DescribeInstanceInformation",
-        "ssm:StartSession"
+        "ssm:StartSession",
+        "ssm:TerminateSession",
+        "ssm:DescribeSessions",
+        "ssm:ListCommands",
+        "ssm:DescribeInstanceAssociationsStatus",
+        "ssm:ListAssociations",
+        "ssm:ListInstanceAssociations",
+        "ssm:UpdateInstanceInformation",
+        "ssm:PutParameter",
+        "ssm:GetParameter"
       ],
       "Resource": "*"
     },
     {
       "Effect": "Allow",
       "Action": [
-        "ec2:*"
+        "ec2:RunInstances",
+        "ec2:TerminateInstances",
+        "ec2:DescribeInstances"
       ],
       "Resource": "*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "iam:*"
+      ],
+      "Resource": "${aws_iam_instance_profile.packer_builder.arn}"
     },
     {
       "Effect": "Allow",
