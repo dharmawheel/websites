@@ -56,7 +56,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update && sudo apt-get install -y \
-            jq
+            jq tar gzip rsync git curl unzip
 
       - name: Install Ansible
         run: |
@@ -67,7 +67,9 @@ jobs:
             .venv/bin/ansible-galaxy collection install community.general ansible.posix
 
       - name: Expose Ansible Vault password
-        run: echo "${{ secrets.ANSIBLE_VAULT_PASSWORD }}" > .vault_pass
+        run: |
+          echo "${{ secrets.ANSIBLE_VAULT_PASSWORD }}" > .vault_pass
+          chmod 600 .vault_pass
 
       - name: Lint Ansible
         run: |
@@ -82,6 +84,10 @@ jobs:
           packer build dw-mono.pkr.hcl
           AMI_ID=$(jq -r '.builds[-1].artifact_id' manifest.json | cut -d':' -f2)
           echo "AMI_ID=${AMI_ID}" >> $GITHUB_OUTPUT
+
+      - name: Clean up Ansible Vault password
+        if: always()
+        run: rm .vault_pass
 
       - name: Terraform plan
         working-directory: ./terraform
