@@ -30,16 +30,16 @@
       ansible.builtin.copy:
         src: files/dhparam.pem
         dest: /etc/pki/tls/certs/dhparam.pem
-        owner: root
-        group: root
+        owner: nginx
+        group: nginx
         mode: "0600"
 
     - name: Copy TLS certificates (origin certs from Cloudflare)
       ansible.builtin.copy:
         src: "files/certs/{{ item }}.pem"
         dest: "/etc/pki/tls/certs/{{ item }}.pem"
-        owner: root
-        group: root
+        owner: nginx
+        group: nginx
         mode: "0644"
       loop: "{{ cert_domains }}"
 
@@ -47,18 +47,26 @@
       ansible.builtin.copy:
         src: "files/certs/{{ item }}.key"
         dest: "/etc/pki/tls/private/{{ item }}.key"
-        owner: root
-        group: root
+        owner: nginx
+        group: nginx
         mode: "0600"
       loop: "{{ cert_domains }}"
+
+    - name: Copy shared TLS parameters
+      ansible.builtin.copy:
+        src: files/tls-params.conf
+        dest: /etc/nginx/tls-params.conf
+        owner: nginx
+        group: nginx
+        mode: "0644"
 
     - name: Copy main nginx config
       ansible.builtin.copy:
         src: files/nginx.conf
         dest: /etc/nginx/nginx.conf
         mode: "0644"
-        owner: root
-        group: root
+        owner: nginx
+        group: nginx
       notify: Restart nginx
 
     - name: Set max body size for nginx
@@ -67,8 +75,8 @@
         content: |
           client_max_body_size 100M;
         mode: "0644"
-        owner: root
-        group: root
+        owner: nginx
+        group: nginx
       notify: Restart nginx
 
     - name: Copy health check config
@@ -76,8 +84,8 @@
         dest: /etc/nginx/default.d/http-health-check.conf
         src: ./files/http-health-check.conf
         mode: "0644"
-        owner: root
-        group: root
+        owner: nginx
+        group: nginx
       notify: Restart nginx
 
     - name: Copy common phpBB3 configuration
@@ -85,8 +93,8 @@
         dest: /etc/nginx/phpbb-common.conf
         src: ./files/phpbb-common.conf
         mode: "0644"
-        owner: root
-        group: root
+        owner: nginx
+        group: nginx
       notify: Restart nginx
 
     - name: Render phpBB3 forum configs
@@ -94,8 +102,8 @@
         src: phpbb-site.conf.j2
         dest: /etc/nginx/conf.d/{{ item.name }}.conf
         mode: "0644"
-        owner: root
-        group: root
+        owner: nginx
+        group: nginx
       loop: "{{ phpbb_sites }}"
       notify: Restart nginx
 
@@ -104,8 +112,8 @@
         src: mediawiki-site.conf.j2
         dest: /etc/nginx/conf.d/{{ item.name }}.conf
         mode: "0644"
-        owner: root
-        group: root
+        owner: nginx
+        group: nginx
       loop: "{{ mediawiki_sites }}"
       notify: Restart nginx
 
