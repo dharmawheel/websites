@@ -7,10 +7,6 @@ resource "aws_launch_template" "dw_template" {
 
   key_name = "DW2023"
 
-  iam_instance_profile {
-    name = aws_iam_instance_profile.ssm_instance_profile.name
-  }
-
   capacity_reservation_specification {
     capacity_reservation_preference = "open"
   }
@@ -30,7 +26,7 @@ resource "aws_launch_template" "dw_template" {
   metadata_options {
     http_endpoint               = "enabled"
     http_protocol_ipv6          = "enabled"
-    http_put_response_hop_limit = "2"
+    http_put_response_hop_limit = 2
     http_tokens                 = "required"
     instance_metadata_tags      = "disabled"
   }
@@ -39,18 +35,17 @@ resource "aws_launch_template" "dw_template" {
     enabled = "false"
   }
 
-
   network_interfaces {
     # Only IPv6 because AWS charges more for public IPv4 addresses.
-    associate_public_ip_address = "false"
-    delete_on_termination       = "true"
-    device_index                = "0"
-    ipv4_address_count          = "0"
-    ipv4_prefix_count           = "0"
-    ipv6_address_count          = "1"
-    ipv6_prefix_count           = "0"
-    network_card_index          = "0"
-    primary_ipv6                = "true"
+    associate_public_ip_address = false
+    delete_on_termination       = true
+    device_index                = 0
+    ipv4_address_count          = 0
+    ipv4_prefix_count           = 0
+    ipv6_address_count          = 1
+    ipv6_prefix_count           = 0
+    network_card_index          = 0
+    primary_ipv6                = true
     security_groups             = [aws_security_group.dw_forums_sg.id]
     subnet_id                   = data.aws_subnet.main.id
   }
@@ -132,34 +127,6 @@ resource "aws_autoscaling_policy" "cpu_policy" {
     }
     target_value = 65.0
   }
-}
-
-resource "aws_iam_role" "ssm_role" {
-  name = "SSMRole"
-
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17",
-    Statement = [
-      {
-        Effect = "Allow",
-        Principal = {
-          Service = "ec2.amazonaws.com"
-        },
-        Action = "sts:AssumeRole"
-      }
-    ]
-  })
-}
-
-resource "aws_iam_policy_attachment" "ssm_policy_attachment" {
-  name       = "SSMPolicyAttachment"
-  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
-  roles      = [aws_iam_role.ssm_role.name]
-}
-
-resource "aws_iam_instance_profile" "ssm_instance_profile" {
-  name = "SSMInstanceProfile"
-  role = aws_iam_role.ssm_role.name
 }
 
 resource "aws_iam_role" "autoscaling_service_role" {
