@@ -27,7 +27,7 @@ if (empty($lang) || !is_array($lang))
 
 $lang = array_merge($lang, [
     'CONTACTADMINPOSTS_EVENT'		=> ' :: Contactadminposts Event :: ',
-    'CONTACT_US' => 'Contact Administrator',
+    'CONTACT_US' => 'Contact us',
     'CONTACT_MESSAGE_SENT' => 'Thank you for your message. We will get back to you shortly.',
     'YOUR_NAME' => 'Your name',
     'YOUR_EMAIL_ADDRESS' => 'Your email address',
