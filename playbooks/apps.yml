@@ -31,7 +31,7 @@
         - name: Copy extension directories
           ansible.posix.synchronize:
             src: "{{ playbook_dir }}/../phpbb_extensions/{{ item[0] }}"
-            dest: "/var/www/{{ item[1] }}/ext/{{ item[0] }}"
+            dest: "/var/www/{{ item[1] }}/ext/"
           loop: "{{ phpbb3_extensions | product(phpbb3) }}"
 
     - name: Render config.php for each site
