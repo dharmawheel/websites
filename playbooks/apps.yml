@@ -8,6 +8,7 @@
       - com_dharmapaths_www
     phpbb3_extensions:
       - dhammawheel/contactadminposts
+      - dhammawheel/downloaduserposts
     mediawiki:
       - com_dhammawiki_www
   tasks:
@@ -18,10 +19,20 @@
       loop: "{{ phpbb3 }}"
 
     - name: Copy extensions to each phpBB3 site
-      ansible.posix.synchronize:
-        src: "{{ playbook_dir }}/../phpbb_extensions/{{ item[0] }}"
-        dest: "/var/www/{{ item[1] }}/ext/{{ item[0] }}"
-      loop: "{{ phpbb3_extensions | product(phpbb3) }}"
+      block:
+        - name: Create extension directories
+          ansible.builtin.file:
+            state: directory
+            path: "/var/www/{{ item[1] }}/ext/{{ item[0] }}"
+            owner: nginx
+            group: nginx
+            mode: "0755"
+          loop: "{{ phpbb3_extensions | product(phpbb3) }}"
+        - name: Copy extension directories
+          ansible.posix.synchronize:
+            src: "{{ playbook_dir }}/../phpbb_extensions/{{ item[0] }}"
+            dest: "/var/www/{{ item[1] }}/ext/{{ item[0] }}"
+          loop: "{{ phpbb3_extensions | product(phpbb3) }}"
 
     - name: Render config.php for each site
       ansible.builtin.template:
