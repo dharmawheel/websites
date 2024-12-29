@@ -79,13 +79,11 @@ resource "aws_security_group" "dw_forums_sg" {
   vpc_id      = data.aws_vpc.dw_vpc.id
 
   ingress {
-    from_port        = 0
-    to_port          = 0
-    self             = false
-    protocol         = -1
-    ipv6_cidr_blocks = ["::/0"]
-    cidr_blocks      = ["0.0.0.0/0"]
-    security_groups  = [aws_security_group.cloudflare_only.id]
+    from_port       = 0
+    to_port         = 0
+    self            = false
+    protocol        = -1
+    security_groups = [aws_security_group.cloudflare_only.id]
   }
 
   egress {
