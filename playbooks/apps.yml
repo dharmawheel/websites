@@ -6,6 +6,8 @@
       - com_dhammawheel_www
       - net_dharmawheel_www
       - com_dharmapaths_www
+    phpbb3_extensions:
+      - dhammawheel/contactadminposts
     mediawiki:
       - com_dhammawiki_www
   tasks:
@@ -14,6 +16,12 @@
         src: "{{ playbook_dir }}/../{{ item }}"
         dest: /var/www/
       loop: "{{ phpbb3 }}"
+
+    - name: Copy extensions to each phpBB3 site
+      ansible.posix.synchronize:
+        src: "{{ playbook_dir }}/../phpbb_extensions/{{ item[0] }}"
+        dest: "/var/www/{{ item[1] }}/ext/{{ item[0] }}"
+      loop: "{{ phpbb3_extensions | product(phpbb3) }}"
 
     - name: Render config.php for each site
       ansible.builtin.template:

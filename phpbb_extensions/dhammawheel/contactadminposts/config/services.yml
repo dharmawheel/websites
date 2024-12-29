@@ -1,0 +1,19 @@
+services:
+    dhammawheel.contactadminposts.controller.contact_controller:
+        class: dhammawheel\contactadminposts\controller\contact_controller
+        arguments:
+            - '@config'
+            - '@controller.helper'
+            - '@template'
+            - '@language'
+            - '@user'
+            - '@request'
+            - '%core.php_ext%'
+            - '%core.root_path%'
+
+    dhammawheel.contactadminposts.listener:
+        class: dhammawheel\contactadminposts\event\main_listener
+        arguments:
+            - '@template'
+        tags:
+            - { name: event.listener }

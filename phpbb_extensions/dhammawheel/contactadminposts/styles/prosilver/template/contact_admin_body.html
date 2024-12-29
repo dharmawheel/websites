@@ -1,0 +1,48 @@
+{% include 'overall_header.html' %}
+
+<form method="post" action="{S_POST_ACTION}" id="post">
+  <div class="panel">
+    <div class="inner">
+      <div class="content">
+        <!-- IF ERROR_MESSAGE --><p class="error">{ERROR_MESSAGE}</p><!-- ENDIF -->
+        <fieldset class="fields2">
+          <dl>
+            <dt><label>{L_RECIPIENT}{L_COLON}</label></dt>
+            <dd><strong>{L_ADMINISTRATOR}</strong></dd>
+          </dl>
+          {% if not S_USER_LOGGED_IN %}
+          <dl>
+            <dt><label for="email">{L_YOUR_EMAIL_ADDRESS}{L_COLON}</label></dt>
+            <dd><input class="inputbox autowidth" type="text" name="email" id="email" size="50" maxlength="100" tabindex="1" value="{EMAIL}" /></dd>
+          </dl>
+          <dl>
+            <dt><label for="name">{L_YOUR_NAME}{L_COLON}</label></dt>
+            <dd><input class="inputbox autowidth" type="text" name="name" id="name" size="50" tabindex="2" value="{NAME}" /></dd>
+          </dl>
+          {% endif %}
+          <dl>
+            <dt><label for="subject">{L_SUBJECT}{L_COLON}</label></dt>
+            <dd><input class="inputbox autowidth" type="text" name="subject" id="subject" size="50" tabindex="3" value="{SUBJECT}" /></dd>
+          </dl>
+          <dl>
+            <dt><label for="message">{L_MESSAGE}{L_COLON}</label><br />
+              <span>{L_EMAIL_BODY_EXPLAIN}</span></dt>
+            <dd><textarea class="inputbox" name="message" id="message" rows="15" cols="76" tabindex="5">{MESSAGE}</textarea></dd>
+          </dl>
+        </fieldset>
+      </div>
+    </div>
+  </div>
+  <div class="panel">
+    <div class="inner">
+      <div class="content">
+        <fieldset class="submit-buttons">
+          <input type="submit" tabindex="6" name="submit" class="button1" value="{L_SEND_EMAIL}" />
+        </fieldset>
+      </div>
+    </div>
+    {S_FORM_TOKEN}
+  </div>
+</form>
+
+{% include 'overall_footer.html' %}

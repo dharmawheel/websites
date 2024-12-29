@@ -1,4 +1,5 @@
 .envrc
+.dir-locals.el
 /test_data/
 .DS_Store
 /manifest.json
@@ -6,7 +7,15 @@
 /scripts
 tfplan
 /utils
-**/store/migrations_*.log
+/com_dhammawheel_www/cache
+/net_dharmawheel_www/cache
+/com_dharmapaths_www/cache
+/com_dhammawheel_www/store
+/net_dharmawheel_www/store
+/com_dharmapaths_www/store
+/com_dhammawheel_www/config.php
+/net_dharmawheel_www/config.php
+/com_dharmapaths_www/config.php
 
 ##########
 # Packer #
