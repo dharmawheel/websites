@@ -1,0 +1,9 @@
+#!/bin/sh
+
+LAUNCH_TEMPLATE_NAME=${LAUNCH_TEMPLATE_NAME:-AppServerTemplate}
+
+aws ec2 describe-launch-template-versions \
+    --launch-template-name "${LAUNCH_TEMPLATE_NAME}" \
+    --versions '$Latest' \
+    --output text \
+    --query 'LaunchTemplateVersions[0].LaunchTemplateData.ImageId'
