@@ -79,6 +79,15 @@
         group: nginx
         mode: "0644"
 
+    - name: Copy robots.txt to all sites
+      ansible.builtin.copy:
+        src: robots.txt
+        dest: "/var/www/{{ item }}/robots.txt"
+        owner: nginx
+        group: nginx
+        mode: "0644"
+      loop: "{{ phpbb3 + mediawiki }}"
+
     - name: Copy health check directory
       ansible.posix.synchronize:
         src: "{{ playbook_dir }}/../health"
