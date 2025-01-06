@@ -1,0 +1,2 @@
+spam_filter_model_filename: "model_quantized.onnx"
+spam_filter_model_path: "{{ spam_filter_dir }}/{{ spam_filter_model_filename }}"

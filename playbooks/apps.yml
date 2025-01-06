@@ -9,6 +9,7 @@
     phpbb3_extensions:
       - dhammawheel/contactadminposts
       - dhammawheel/downloaduserposts
+      - proprietary/spamfilter
     mediawiki:
       - com_dhammawiki_www
   tasks:
@@ -120,3 +121,7 @@
         group: nginx
         mode: "0777"
       loop: "{{ phpbb3 }}"
+
+    - name: Install spam filter gRPC server
+      ansible.builtin.import_role:
+        name: spam_filter

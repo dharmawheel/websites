@@ -1,0 +1,5 @@
+- name: Build spam filter gRPC server
+  ansible.builtin.import_tasks: build.yml
+
+- name: Install spam filter gRPC server
+  ansible.builtin.import_tasks: install.yml
