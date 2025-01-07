@@ -1,0 +1,25 @@
+- name: Install gRPC for PHP using pecl
+  community.general.pear:
+    name: grpc
+    state: present
+
+- name: Add grpc.so to php.ini
+  ansible.builtin.copy:
+    content: "extension=grpc.so"
+    dest: /etc/php.d/grpc.ini
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Install protobuf for PHP using pecl
+  community.general.pear:
+    name: protobuf
+    state: present
+
+- name: Add protobuf.so to php.ini
+  ansible.builtin.copy:
+    content: "extension=protobuf.so"
+    dest: /etc/php.d/protobuf.ini
+    owner: root
+    group: root
+    mode: "0644"

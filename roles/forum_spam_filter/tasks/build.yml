@@ -1,4 +1,5 @@
 - name: Install prerequisites
+  when: ansible_os_family == "RedHat"
   ansible.builtin.dnf:
     name:
       - gcc
@@ -7,6 +8,15 @@
       - autoconf
       - cmake
       - git
+    state: present
+
+- name: Install prerequisites
+  when: ansible_os_family == "Debian"
+  ansible.builtin.apt:
+    name:
+      - cmake
+      - git
+      - build-essential
     state: present
 
 - name: Download rustup
@@ -31,21 +41,22 @@
 
 - name: Fetch source code
   ansible.builtin.git:
-    repo: "{{ spam_filter_repo }}"
-    dest: "{{ spam_filter_dir }}"
-    version: "{{ spam_filter_version }}"
+    repo: "{{ forum_spam_filter_repo }}"
+    dest: "{{ forum_spam_filter_dir }}"
+    version: "{{ forum_spam_filter_version }}"
     depth: 1
 
 - name: Build release binary
   ansible.builtin.command:
     cmd: "{{ ansible_env.HOME }}/.cargo/bin/cargo build --release"
-    chdir: "{{ spam_filter_dir }}"
-    creates: "{{ spam_filter_dir }}/target/release/rpc"
+    chdir: "{{ forum_spam_filter_dir }}"
+    creates: "{{ forum_spam_filter_dir }}/target/release/rpc"
 
-- name: Copy pretrained model
+- name: Install release binary
   ansible.builtin.copy:
-    src: model_quantized.onnx
-    dest: "{{ spam_filter_model_path }}"
-    owner: root
-    group: root
-    mode: "0644"
+    src: "{{ forum_spam_filter_dir }}/target/release/rpc"
+    dest: "{{ forum_spam_filter_dir }}/rpc"
+    remote_src: true
+    group: "{{ forum_spam_filter_group }}"
+    owner: "{{ forum_spam_filter_user }}"
+    mode: "0755"

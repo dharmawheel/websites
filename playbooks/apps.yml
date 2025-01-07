@@ -122,6 +122,8 @@
         mode: "0777"
       loop: "{{ phpbb3 }}"
 
-    - name: Install spam filter gRPC server
+    - name: Install gRPC server for spam classification model
       ansible.builtin.import_role:
-        name: spam_filter
+        name: forum_spam_filter
+      vars:
+        forum_spam_filter_build_from_source: false

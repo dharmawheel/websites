@@ -1,0 +1,20 @@
+- name: Create spam filter group
+  ansible.builtin.group:
+    name: "{{ forum_spam_filter_group }}"
+    state: present
+
+- name: Create spam filter user
+  ansible.builtin.user:
+    name: "{{ forum_spam_filter_user }}"
+    group: "{{ forum_spam_filter_group }}"
+    shell: /sbin/nologin
+    system: true
+    state: present
+
+- name: Set ownership of spam filter directory
+  ansible.builtin.file:
+    state: directory
+    path: "{{ forum_spam_filter_dir }}"
+    owner: "{{ forum_spam_filter_user }}"
+    group: "{{ forum_spam_filter_group }}"
+    recurse: true

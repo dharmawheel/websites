@@ -1,6 +1,0 @@
-spam_filter_dir: "/opt/spam-filter"
-spam_filter_grpc_port: "60066"
-spam_filter_user: "spam_filter"
-spam_filter_group: "spam_filter"
-spam_filter_repo: "https://github.com/proprietary/forum-spam-filter"
-spam_filter_version: "v0.1.0"
