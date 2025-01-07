@@ -29,8 +29,6 @@
           - readline-devel
           - amazon-ssm-agent
         state: present
-      vars:
-        build_lua_install_prefix: /opt/lua5_1_5
     - name: Enable nginx
       ansible.builtin.systemd:
         name: nginx
@@ -47,13 +45,9 @@
         state: started
         enabled: true
     - name: Install PHP redis
-      ansible.builtin.shell:
-        cmd: |
-          set -o pipefail \
-          && pecl update-channels \
-          && (yes '' | pecl install redis || true) \
-          && pecl list | grep redis | grep -q redis
-      changed_when: false
+      community.general.pear:
+        name: pecl/redis
+        state: present
     - name: Write PHP configuration
       ansible.builtin.copy:
         dest: /etc/php.d/50-redis.ini
