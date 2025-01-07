@@ -11,10 +11,18 @@
     system: true
     state: present
 
-- name: Set ownership of spam filter directory
+- name: Create data directory
   ansible.builtin.file:
     state: directory
     path: "{{ forum_spam_filter_dir }}"
     owner: "{{ forum_spam_filter_user }}"
     group: "{{ forum_spam_filter_group }}"
-    recurse: true
+    mode: "0755"
+
+- name: Create ONNX Runtime directory
+  ansible.builtin.file:
+    state: directory
+    path: "{{ forum_spam_filter_onnxruntime_prefix }}"
+    owner: "{{ forum_spam_filter_user }}"
+    group: "{{ forum_spam_filter_group }}"
+    mode: "0755"

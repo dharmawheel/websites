@@ -1,3 +1,14 @@
+- name: Install prerequisites for building PHP extensions
+  ansible.builtin.dnf:
+    name:
+      - gcc
+      - g++
+      - libtool
+      - autoconf
+      - cmake
+      - git
+    state: present
+
 - name: Install gRPC for PHP using pecl
   community.general.pear:
     name: pecl/grpc
