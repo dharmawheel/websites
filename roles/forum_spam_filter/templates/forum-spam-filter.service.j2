@@ -10,7 +10,7 @@ Type=simple
 Environment="ORT_DYLIB_PATH={{ forum_spam_filter_onnxruntime_prefix }}/lib/libonnxruntime.so"
 Environment="MODEL_PATH={{ forum_spam_filter_model_path }}"
 Environment="GRPC_PORT={{ forum_spam_filter_grpc_port }}"
-ExecStart={{ forum_spam_filter_dir }}/target/release/rpc
+ExecStart={{ forum_spam_filter_dir }}/rpc
 User={{ forum_spam_filter_user }}
 Group={{ forum_spam_filter_group }}
 Restart=on-failure
