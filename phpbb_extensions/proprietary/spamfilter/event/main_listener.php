@@ -64,8 +64,9 @@ class main_listener implements EventSubscriberInterface
         $data = $event['data'];
         $post_text = $data['message'];
         $poster_id = (int) $data['poster_id'];
+        $post_id = (int) $data['post_id'];
         if ($this->is_user_newly_registered($poster_id)
-            && $this->is_in_moderation_queue((int) $data['post_id'])
+            && $this->is_in_moderation_queue($post_id)
             && $this->is_spam($post_text)) {
             $this->disapprove_post($data);
         }
