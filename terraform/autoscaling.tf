@@ -74,7 +74,8 @@ resource "aws_launch_template" "dw_template" {
 resource "aws_autoscaling_group" "dw_asg" {
   name = "AppServerAutoscalingGroup"
 
-  min_size              = 1
+  desired_capacity      = 2
+  min_size              = 2
   max_size              = 15
   metrics_granularity   = "1Minute"
   max_instance_lifetime = 2592000
@@ -87,10 +88,9 @@ resource "aws_autoscaling_group" "dw_asg" {
   capacity_rebalance        = false
   default_cooldown          = 300
   default_instance_warmup   = 60
-  desired_capacity          = 1
   enabled_metrics           = ["GroupAndWarmPoolDesiredCapacity", "GroupAndWarmPoolTotalCapacity", "GroupDesiredCapacity", "GroupInServiceCapacity", "GroupInServiceInstances", "GroupMaxSize", "GroupMinSize", "GroupPendingCapacity", "GroupPendingInstances", "GroupStandbyCapacity", "GroupStandbyInstances", "GroupTerminatingCapacity", "GroupTerminatingInstances", "GroupTotalCapacity", "GroupTotalInstances", "WarmPoolDesiredCapacity", "WarmPoolMinSize", "WarmPoolPendingCapacity", "WarmPoolTerminatingCapacity", "WarmPoolTotalCapacity", "WarmPoolWarmedCapacity"]
   force_delete              = false
-  health_check_grace_period = 120
+  health_check_grace_period = 60
   health_check_type         = "ELB"
 
   instance_maintenance_policy {
@@ -106,7 +106,7 @@ resource "aws_autoscaling_group" "dw_asg" {
   instance_refresh {
     strategy = "Rolling"
     preferences {
-      min_healthy_percentage = 90
+      min_healthy_percentage = 100
     }
   }
 
@@ -125,7 +125,7 @@ resource "aws_autoscaling_policy" "cpu_policy" {
     predefined_metric_specification {
       predefined_metric_type = "ASGAverageCPUUtilization"
     }
-    target_value = 65.0
+    target_value = 60.0
   }
 }
 
