@@ -9,6 +9,10 @@
       - git
     state: present
 
+- name: Update pecl
+  ansible.builtin.command: pear channel-update pecl.php.net
+  changed_when: false
+
 - name: Install gRPC for PHP using pecl
   community.general.pear:
     name: pecl/grpc

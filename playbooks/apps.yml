@@ -7,9 +7,17 @@
       - net_dharmawheel_www
       - com_dharmapaths_www
     phpbb3_extensions:
-      - dhammawheel/contactadminposts
-      - dhammawheel/downloaduserposts
-      - proprietary/spamfilter
+      dhammawheel/contactadminposts:
+        - com_dhammawheel_www
+        - net_dharmawheel_www
+        - com_dharmapaths_www
+      dhammawheel/downloaduserposts:
+        - com_dhammawheel_www
+        - net_dharmawheel_www
+        - com_dharmapaths_www
+      proprietary/spamfilter:
+        - com_dhammawheel_www
+        - com_dharmapaths_www
     mediawiki:
       - com_dhammawiki_www
   tasks:
@@ -24,16 +32,25 @@
         - name: Create extension directories
           ansible.builtin.file:
             state: directory
-            path: "/var/www/{{ item[1] }}/ext/{{ item[0] }}"
+            path: "/var/www/{{ item.1 }}/ext/{{ item.0.key }}"
             owner: nginx
             group: nginx
             mode: "0755"
-          loop: "{{ phpbb3_extensions | product(phpbb3) }}"
+          with_subelements:
+            - "{{ phpbb3_extensions | dict2items }}"
+            - value
+          loop_control:
+            label: "{{ item.0.key }} on site {{ item.1 }}"
+
         - name: Copy extension directories
           ansible.posix.synchronize:
-            src: "{{ playbook_dir }}/../phpbb_extensions/{{ item[0] }}/"
-            dest: "/var/www/{{ item[1] }}/ext/{{ item[0] }}/"
-          loop: "{{ phpbb3_extensions | product(phpbb3) }}"
+            src: "{{ playbook_dir }}/../phpbb_extensions/{{ item.0.key }}/"
+            dest: "/var/www/{{ item.1 }}/ext/{{ item.0.key }}/"
+          with_subelements:
+            - "{{ phpbb3_extensions | dict2items }}"
+            - value
+          loop_control:
+            label: "{{ item.0.key }} on site {{ item.1 }}"
 
     - name: Render config.php for each site
       ansible.builtin.template:
