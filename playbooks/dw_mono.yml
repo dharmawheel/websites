@@ -1,3 +1,4 @@
+# This playbook assumes that the playbook dw_mono_base.yml has already been run.
 - name: Check prerequisites
   hosts: dw-mono
   become: true
@@ -16,8 +17,6 @@
           - dharmawheel_db_pass is defined
           - dharmapaths_db_pass is defined
         msg: "Secrets file is missing required variables"
-- name: Install packages
-  ansible.builtin.import_playbook: packages.yml
 - name: Copy application code
   ansible.builtin.import_playbook: apps.yml
 - name: Set up IPv6

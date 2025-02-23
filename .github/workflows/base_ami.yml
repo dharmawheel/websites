@@ -1,0 +1,85 @@
+name: Build Base AMI
+
+on:
+  schedule:
+    - cron: '0 0 15 * *'  # Every month on the 15th
+  workflow_dispatch:
+
+jobs:
+  build-base-ami:
+    runs-on: ubuntu-latest
+
+    env:
+      PACKER_VERSION: "1.9.4"
+      PYTHON_VERSION: "3.13"
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      - name: Set up AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-west-1
+
+      - name: Setup Packer
+        uses: hashicorp/setup-packer@main
+        with:
+          packer-version: ${{ env.PACKER_VERSION }}
+
+      - name: Validate Packer
+        run: packer validate dw-mono-base.pkr.hcl
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update && sudo apt-get install -y \
+            tar gzip rsync git curl unzip \
+            zstd xz-utils bzip2
+
+      - name: Install Ansible
+        run: |
+          python -m venv .venv && \
+            source .venv/bin/activate && \
+            .venv/bin/python -m pip install --upgrade pip && \
+            .venv/bin/pip install ansible ansible-lint && \
+            .venv/bin/ansible-galaxy collection install community.general ansible.posix
+
+      - name: Expose Ansible Vault password
+        run: |
+          echo "${{ secrets.ANSIBLE_VAULT_PASSWORD }}" > .vault_pass
+          chmod 600 .vault_pass
+
+      - name: Lint Ansible
+        run: |
+          source .venv/bin/activate && \
+            .venv/bin/ansible-lint --version && \
+            .venv/bin/ansible-lint playbooks/
+
+      - name: Build Base AMI with Packer
+        id: packer_build
+        run: |
+          source .venv/bin/activate
+          packer build dw-mono-base.pkr.hcl
+          AMI_ID=$(jq -r '.builds[-1].artifact_id' dw_mono_base_manifest.json | cut -d':' -f2)
+          echo "AMI_ID=$AMI_ID" >> $GITHUB_OUTPUT
+
+      - name: Clean up Ansible Vault password
+        if: always()
+        run: rm .vault_pass
+
+      - name: Update SSM Parameter with Base AMI ID
+        run: |
+          aws ssm put-parameter \
+            --name /dw-mono/base-ami-id \
+            --value ${{ steps.packer_build.outputs.AMI_ID }} \
+            --type String \
+            --overwrite

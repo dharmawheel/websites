@@ -48,9 +48,32 @@
       community.general.pear:
         name: pecl/redis
         state: present
-    - name: Write PHP configuration
+    - name: Add redis.so to php.ini
       ansible.builtin.copy:
-        dest: /etc/php.d/50-redis.ini
-        content: |
-          extension=redis.so
+        content: "extension=redis.so"
+        dest: /etc/php.d/99-redis.ini
+        owner: root
+        group: root
+        mode: "0644"
+    - name: Install gRPC for PHP using pecl
+      community.general.pear:
+        name: pecl/grpc
+        state: present
+    - name: Add grpc.so to php.ini
+      ansible.builtin.copy:
+        content: "extension=grpc.so"
+        dest: /etc/php.d/99-grpc.ini
+        owner: root
+        group: root
+        mode: "0644"
+    - name: Install protobuf for PHP using pecl
+      community.general.pear:
+        name: pecl/protobuf
+        state: present
+    - name: Add protobuf.so to php.ini
+      ansible.builtin.copy:
+        content: "extension=protobuf.so"
+        dest: /etc/php.d/99-protobuf.ini
+        owner: root
+        group: root
         mode: "0644"

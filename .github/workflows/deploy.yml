@@ -12,6 +12,7 @@ jobs:
     env:
       PACKER_VERSION: "1.9.4"
       TERRAFORM_VERSION: "1.9.6"
+      PYTHON_VERSION: "3.13"
 
     steps:
       - name: Check out repository
@@ -26,7 +27,13 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-west-1
 
-      - name: Setup `packer`
+      - name: Fetch base AMI ID
+        id: fetch_base_ami
+        run: |
+          BASE_AMI=$(aws ssm get-parameter --name /dw-mono/base-ami-id --query "Parameter.Value" --output text)
+          echo "AMI_ID=${BASE_AMI}" >> $GITHUB_OUTPUT
+
+      - name: Setup Packer
         uses: hashicorp/setup-packer@main
         with:
           version: ${{ env.PACKER_VERSION }}
@@ -40,7 +47,7 @@ jobs:
         run: packer init ./dw-mono.pkr.hcl
 
       - name: Validate Packer
-        run: packer validate dw-mono.pkr.hcl
+        run: packer validate -var source_ami=${{ steps.fetch_base_ami.outputs.AMI_ID }} dw-mono.pkr.hcl
 
       - name: Initialize Terraform
         working-directory: ./terraform
@@ -53,7 +60,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.13"
+          python-version: ${{ env.PYTHON_VERSION }}
 
       - name: Install dependencies
         run: |
@@ -84,8 +91,8 @@ jobs:
         id: packer_build
         run: |
           source .venv/bin/activate
-          packer build dw-mono.pkr.hcl
-          AMI_ID=$(jq -r '.builds[-1].artifact_id' manifest.json | cut -d':' -f2)
+          packer build -var "source_ami=${{ steps.fetch_base_ami.outputs.AMI_ID }}" dw-mono.pkr.hcl
+          AMI_ID=$(jq -r '.builds[-1].artifact_id' dw_mono_manifest.json | cut -d':' -f2)
           echo "AMI_ID=${AMI_ID}" >> $GITHUB_OUTPUT
 
       - name: Clean up Ansible Vault password
