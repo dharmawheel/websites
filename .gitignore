@@ -2,7 +2,7 @@
 .dir-locals.el
 /test_data/
 .DS_Store
-/manifest.json
+/*manifest.json
 *.docker-compose.yml
 /scripts
 tfplan

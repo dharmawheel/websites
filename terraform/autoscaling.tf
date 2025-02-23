@@ -76,7 +76,7 @@ resource "aws_autoscaling_group" "dw_asg" {
 
   desired_capacity      = 2
   min_size              = 2
-  max_size              = 15
+  max_size              = 5
   metrics_granularity   = "1Minute"
   max_instance_lifetime = 2592000
 
