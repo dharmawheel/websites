@@ -1,0 +1,9 @@
+services:
+    dhammawheel.blockfoes.listener:
+        class: dhammawheel\blockfoes\event\main_listener
+        arguments:
+            - '@dbal.conn'
+            - '@user'
+            - '@language'
+        tags:
+            - { name: event.listener }

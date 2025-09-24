@@ -18,6 +18,10 @@
       proprietary/spamfilter:
         - com_dhammawheel_www
         - com_dharmapaths_www
+      dhammawheel/blockfoes:
+        - com_dhammawheel_www
+        - com_dharmapaths_www
+        - net_dharmawheel_www
     mediawiki:
       - com_dhammawiki_www
   tasks:
