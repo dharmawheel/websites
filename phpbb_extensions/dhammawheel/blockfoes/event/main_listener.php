@@ -49,6 +49,8 @@ class main_listener implements EventSubscriberInterface
         return [
             'core.user_setup'							=> 'load_language_on_setup',
             'core.viewtopic_modify_post_row' => 'hide_blocked_posts',
+            // TODO(zds): Hide search results, too.
+            // 'core.search_modify_post_row' => 'hide_blocked_search_results',
         ];
     }
 
@@ -95,12 +97,27 @@ class main_listener implements EventSubscriberInterface
 
         $blockers = $this->get_users_who_block_me();
 
-        if (in_array($poster_id, $blockers))
+        $blocked = in_array($poster_id, $blockers);
+        if ($blocked)
         {
             $post_row['MESSAGE'] = $this->language->lang('USER_HAS_BLOCKED_YOU');
             $post_row['POST_SUBJECT'] = 'Post hidden';
             $post_row['SIGNATURE'] =  '';
-            $event['post_row'] = $post_row;
         }
+        $post_row['S_IS_BLOCKED_BY_USER'] = $blocked;
+
+        $event['post_row'] = $post_row;
     }
+
+    // public function hide_blocked_search_results($event)
+    // {
+    //     $row = $event['row'];
+    //     $poster_id = $row['poster_id'];
+
+    //     $blockers = $this->get_users_who_block_me();
+
+    //     $row['S_IS_BLOCKED_BY_USER'] = in_array($poster_id, $blockers);
+
+    //     $event['row'] = $row;
+    // }
 }
