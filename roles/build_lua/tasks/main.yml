@@ -2,16 +2,16 @@
   ansible.builtin.tempfile:
     state: directory
     suffix: lua
-  register: temp_dir
+  register: build_lua_temp_dir
 - name: Transfer tarball to remote
   ansible.posix.synchronize:
     src: "{{ role_path }}/files/lua-5.1.5.tar.gz"
-    dest: "{{ temp_dir.path }}"
+    dest: "{{ build_lua_temp_dir.path }}"
     mode: push
 - name: Extract tarball
   ansible.builtin.unarchive:
-    src: "{{ temp_dir.path }}/lua-5.1.5.tar.gz"
-    dest: "{{ temp_dir.path }}"
+    src: "{{ build_lua_temp_dir.path }}/lua-5.1.5.tar.gz"
+    dest: "{{ build_lua_temp_dir.path }}"
     remote_src: true
 - name: Install dependencies
   ansible.builtin.package:
@@ -27,7 +27,7 @@
     - ansible_os_family == 'RedHat'
 - name: Build Lua 5.1.5
   ansible.builtin.shell:
-    chdir: "{{ temp_dir.path }}/lua-5.1.5"
+    chdir: "{{ build_lua_temp_dir.path }}/lua-5.1.5"
     creates: "{{ build_lua_install_prefix }}/bin/lua"
     cmd: |
       make linux && \
@@ -35,7 +35,7 @@
   changed_when: false
 - name: Remove temporary directory
   ansible.builtin.file:
-    path: "{{ temp_dir.path }}"
+    path: "{{ build_lua_temp_dir.path }}"
     state: absent
 - name: Change owner to nginx
   ansible.builtin.file:

@@ -14,7 +14,7 @@
   ansible.builtin.tempfile:
     state: directory
     prefix: phpbb-patch-
-  register: phpbb_patch_dir
+  register: update_phpbb_patch_dir
 
 - name: Fetch phpBB3 patch files
   ansible.builtin.get_url:
@@ -23,26 +23,26 @@
       {{ update_phpbb_next_version.split('.')[:2] | join('.') }}/
       {{ update_phpbb_next_version }}/
       phpBB-{{ update_phpbb_next_version }}-patch.tar.bz2
-    dest: "{{ phpbb_patch_dir.path }}/phpbb.tar.bz2"
+    dest: "{{ update_phpbb_patch_dir.path }}/phpbb.tar.bz2"
     mode: "0644"
 
 - name: Extract phpBB3 patch files
   ansible.builtin.unarchive:
-    src: "{{ phpbb_patch_dir.path }}/phpbb.tar.bz2"
-    dest: "{{ phpbb_patch_dir.path }}"
+    src: "{{ update_phpbb_patch_dir.path }}/phpbb.tar.bz2"
+    dest: "{{ update_phpbb_patch_dir.path }}"
     include:
       - "phpBB-{{ update_phpbb_current_version }}_to_{{ update_phpbb_next_version }}.patch"
 
 - name: Fail if patch file does not exist
   ansible.builtin.stat:
-    path: "{{ phpbb_patch_dir.path }}/phpBB-{{ update_phpbb_current_version }}_to_{{ update_phpbb_next_version }}.patch"
-  register: phpbb_patch_file
+    path: "{{ update_phpbb_patch_dir.path }}/phpBB-{{ update_phpbb_current_version }}_to_{{ update_phpbb_next_version }}.patch"
+  register: update_phpbb_patch_file
   failed_when:
-    - not phpbb_patch_file.stat.exists
+    - not update_phpbb_patch_file.stat.exists
 
 - name: Extract phpBB3 files
   ansible.builtin.unarchive:
-    src: "{{ phpbb_patch_dir.path }}/phpbb.tar.bz2"
+    src: "{{ update_phpbb_patch_dir.path }}/phpbb.tar.bz2"
     dest: "{{ role_path }}/../../{{ update_phpbb_site }}"
     include:
       - vendor/
@@ -50,5 +50,5 @@
 - name: Apply phpBB3 patch
   ansible.posix.patch:
     basedir: "{{ role_path }}/../../{{ update_phpbb_site }}"
-    src: "{{ phpbb_patch_dir.path }}/phpBB-{{ update_phpbb_current_version }}_to_{{ update_phpbb_next_version }}.patch"
+    src: "{{ update_phpbb_patch_dir.path }}/phpBB-{{ update_phpbb_current_version }}_to_{{ update_phpbb_next_version }}.patch"
     state: present
