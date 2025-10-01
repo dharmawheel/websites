@@ -11,7 +11,6 @@ namespace dhammawheel\blockfoes\event;
 
 use phpbb\config\config;
 use phpbb\controller\helper as controller_helper;
-use phpbb\language\language;
 use phpbb\notification\manager;
 use phpbb\template\template;
 use phpbb\db\driver\driver_interface;
@@ -27,16 +26,14 @@ class main_listener implements EventSubscriberInterface
     protected $db;
     /* @var user */
     protected $user;
-    /* @var \phpbb\language\language */
-    protected $language;
-    protected $table_prefix;
+    /* @var template */
+    protected $template;
 
-    public function __construct(driver_interface $db, user $user, language $language)
+    public function __construct(driver_interface $db, user $user, template $template)
     {
         $this->db = $db;
         $this->user = $user;
-        $this->language = $language;
-        $this->table_prefix = $this->table_prefix;
+        $this->template = $template;
     }
 
     /**
@@ -47,77 +44,121 @@ class main_listener implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return [
-            'core.user_setup'							=> 'load_language_on_setup',
-            'core.viewtopic_modify_post_row' => 'hide_blocked_posts',
-            // TODO(zds): Hide search results, too.
-            // 'core.search_modify_post_row' => 'hide_blocked_search_results',
+            'core.viewtopic_modify_post_list_sql' => 'filter_blocked_posts',
+            'core.viewforum_get_topic_data' => 'filter_blocked_topics',
+            'core.viewforum_get_topic_ids_data' => 'filter_blocked_topic_ids',
+            'core.search_get_posts_data' => 'filter_blocked_posts_in_search',
+            'core.search_get_topic_data' => 'filter_blocked_topics_in_search',
+            'core.viewonline_modify_sql' => 'filter_blocked_users_from_viewonline',
         ];
     }
 
-    /**
-     * Load common language files during user setup
-     *
-     * @param \phpbb\event\data	$event	Event object
-     */
-    public function load_language_on_setup($event)
-    {
-        $lang_set_ext = $event['lang_set_ext'];
-        $lang_set_ext[] = [
-            'ext_name' => 'dhammawheel/blockfoes',
-            'lang_set' => 'common',
+    public function filter_blocked_posts($event) {
+        if ($this->user->data['user_id'] == ANONYMOUS) {
+            return;
+        }
+
+        $sql = $event['sql'];
+        $current_user_id = (int) $this->user->data['user_id'];
+        $where_pos = stripos($sql, 'WHERE');
+        if ($where_pos == false) {
+            return;
+        }
+        $join_sql = ' LEFT JOIN ' . ZEBRA_TABLE . ' z ON (z.user_id = p.poster_id AND z.zebra_id = ' . $current_user_id . ' AND z.foe = 1) ';
+        $where_condition_sql = ' z.user_id IS NULL AND ';
+        $sql_before_where = substr($sql, 0, $where_pos);
+        $sql_after_where = substr($sql, $where_pos + 5);
+        $new_sql = $sql_before_where . $join_sql . 'WHERE' . $where_condition_sql . $sql_after_where;
+        $event['sql'] = $new_sql;
+    }
+
+    public function filter_blocked_posts_in_search($event) {
+        if ($this->user->data['user_id'] == ANONYMOUS) {
+            return;
+        }
+
+        $sql_array = $event['sql_array'];
+        $current_user_id = (int) $this->user->data['user_id'];
+        $sql_array['LEFT_JOIN'][] = [
+            'FROM' => [ZEBRA_TABLE => 'z_block'],
+            'ON' => 'z_block.user_id = p.poster_id AND z_block.zebra_id = ' . $current_user_id . ' AND z_block.foe = 1',
         ];
-        $event['lang_set_ext'] = $lang_set_ext;
+        $sql_array['WHERE'] .= ' AND z_block.user_id IS NULL';
+        $event['sql_array'] = $sql_array;
     }
 
-    private function get_users_who_block_me()
-    {
-        $blockers = [];
-
-        if ($this->user->data['user_id'] == ANONYMOUS)
-        {
-            return $blockers;
+    public function filter_blocked_topics_in_search($event) {
+        if ($this->user->data['user_id'] == ANONYMOUS) {
+            return;
         }
 
-        $sql = 'SELECT user_id FROM ' . ZEBRA_TABLE . ' WHERE zebra_id = ' . (int) $this->user->data['user_id'] . ' AND foe = 1';
-        $result = $this->db->sql_query($sql);
-        while ($row = $this->db->sql_fetchrow($result))
-        {
-            $user_id = $row['user_id'];
-            array_push($blockers, (int) $user_id);
-        }
-        $this->db->sql_freeresult($result);
+        $current_user_id = (int) $this->user->data['user_id'];
+        $sql_from = $event['sql_from'];
+        $sql_where = $event['sql_where'];
 
-        return $blockers;
+        $sql_from .= ' LEFT JOIN ' . ZEBRA_TABLE . ' z_block_topic ON (z_block_topic.user_id = t.topic_poster AND z_block_topic.zebra_id = ' . $current_user_id . ' AND z_block_topic.foe = 1)';
+        $sql_where .= ' AND z_block_topic.user_id IS NULL';
+
+        $event['sql_from'] = $sql_from;
+        $event['sql_where'] = $sql_where;
     }
 
-    public function hide_blocked_posts($event)
-    {
-        $post_row = $event['post_row'];
-        $poster_id = $post_row['POSTER_ID'];
-
-        $blockers = $this->get_users_who_block_me();
-
-        $blocked = in_array($poster_id, $blockers);
-        if ($blocked)
-        {
-            $post_row['MESSAGE'] = $this->language->lang('USER_HAS_BLOCKED_YOU');
-            $post_row['POST_SUBJECT'] = 'Post hidden';
-            $post_row['SIGNATURE'] =  '';
+    public function filter_blocked_topics($event) {
+        if ($this->user->data['user_id'] == ANONYMOUS) {
+            return;
         }
-        $post_row['S_IS_BLOCKED_BY_USER'] = $blocked;
 
-        $event['post_row'] = $post_row;
+        $current_user_id = (int) $this->user->data['user_id'];
+        $sql_array = $event['sql_array'];
+
+        $sql_array['LEFT_JOIN'][] = [
+            'FROM' => [ZEBRA_TABLE => 'z_block_forum_topic'],
+            'ON' => 'z_block_forum_topic.user_id = t.topic_poster AND z_block_forum_topic.zebra_id = ' . $current_user_id . ' AND z_block_forum_topic.foe = 1',
+        ];
+        $sql_where = 'z_block_forum_topic.user_id IS NULL';
+        if (array_key_exists('WHERE', $sql_array)) {
+            $sql_array['WHERE'] .= ' AND ' . $sql_where;
+        } else {
+            $sql_array['WHERE'] = $sql_where;
+        }
+
+        $event['sql_array'] = $sql_array;
     }
 
-    // public function hide_blocked_search_results($event)
-    // {
-    //     $row = $event['row'];
-    //     $poster_id = $row['poster_id'];
+    public function filter_blocked_topic_ids($event) {
+        if ($this->user->data['user_id'] == ANONYMOUS) {
+            return;
+        }
 
-    //     $blockers = $this->get_users_who_block_me();
+        $current_user_id = (int) $this->user->data['user_id'];
+        $sql_array = $event['sql_ary'];
 
-    //     $row['S_IS_BLOCKED_BY_USER'] = in_array($poster_id, $blockers);
+        $sql_array['LEFT_JOIN'][] = [
+            'FROM' => [ZEBRA_TABLE => 'z_block_forum_topic_2'],
+            'ON' => 'z_block_forum_topic_2.user_id = t.topic_poster and z_block_forum_topic_2.zebra_id = ' . $current_user_id . ' AND z_block_forum_topic_2.foe = 1',
+        ];
+        $sql_array['WHERE'] .= ' AND z_block_forum_topic_2.user_id IS NULL';
 
-    //     $event['row'] = $row;
-    // }
+        $event['sql_ary'] = $sql_array;
+    }
+
+    public function filter_blocked_users_from_viewonline($event) {
+        if ($this->user->data['user_id'] == ANONYMOUS) {
+            return;
+        }
+
+        $current_user_id = (int) $this->user->data['user_id'];
+        $sql_array = $event['sql_ary'];
+
+        if (!isset($sql_array['LEFT_JOIN'])) {
+            $sql_array['LEFT_JOIN'] = [];
+        }
+        $sql_array['LEFT_JOIN'][] = [
+            'FROM' => [ZEBRA_TABLE => 'z_block_online'],
+            'ON' => 'z_block_online.user_id = u.user_id AND z_block_online.zebra_id = ' . $current_user_id . ' AND z_block_online.foe = 1',
+        ];
+        $sql_array['WHERE'] .= ' AND z_block_online.user_id IS NULL';
+
+        $event['sql_ary'] = $sql_array;
+    }
 }

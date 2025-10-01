@@ -4,6 +4,6 @@ services:
         arguments:
             - '@dbal.conn'
             - '@user'
-            - '@language'
+            - '@template'
         tags:
             - { name: event.listener }
