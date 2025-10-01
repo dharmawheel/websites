@@ -170,6 +170,27 @@ resource "aws_iam_policy" "github_actions_policy" {
         "sts:GetCallerIdentity"
       ],
       "Resource": "*"
+    },
+    {
+        "Effect": "Allow",
+        "Action": [
+            "elasticloadbalancing:CreateLoadBalancer",
+            "elasticloadbalancing:DeleteLoadBalancer",
+            "elasticloadbalancing:ModifyLoadBalancerAttributes",
+            "elasticloadbalancing:CreateTargetGroup",
+            "elasticloadbalancing:DeleteTargetGroup",
+            "elasticloadbalancing:ModifyTargetGroup",
+            "elasticloadbalancing:ModifyTargetGroupAttributes",
+            "elasticloadbalancing:RegisterTargets",
+            "elasticloadbalancing:DeregisterTargets",
+            "elasticloadbalancing:CreateListener",
+            "elasticloadbalancing:DeleteListener",
+            "elasticloadbalancing:ModifyListener",
+            "elasticloadbalancing:CreateRule",
+            "elasticloadbalancing:DeleteRule",
+            "elasticloadbalancing:ModifyRule"
+        ],
+        "Resource": "*"
     }
   ]
 }
