@@ -76,6 +76,10 @@ jobs:
             .venv/bin/pip install ansible ansible-lint && \
             .venv/bin/ansible-galaxy collection install community.general ansible.posix
 
+      - name: Install Ansible Galaxy collections
+        run: |
+          ansible-galaxy collection install -r collections/requirements.yml
+
       - name: Expose Ansible Vault password
         run: |
           echo "${{ secrets.ANSIBLE_VAULT_PASSWORD }}" > .vault_pass
