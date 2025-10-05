@@ -1,3 +1,6 @@
+# How to run:
+#   ansible-playbook playbooks/update_phpbb.yml -e "update_phpbb_current_version=3.3.14" -e "update_phpbb_next_version=3.3.15" -v
+
 - name: Check variables
   ansible.builtin.assert:
     that:
@@ -19,10 +22,7 @@
 - name: Fetch phpBB3 patch files
   ansible.builtin.get_url:
     url: >-
-      https://download.phpbb.com/pub/release/
-      {{ update_phpbb_next_version.split('.')[:2] | join('.') }}/
-      {{ update_phpbb_next_version }}/
-      phpBB-{{ update_phpbb_next_version }}-patch.tar.bz2
+      https://download.phpbb.com/pub/release/{{ update_phpbb_next_version.split('.')[:2] | join('.') }}/{{ update_phpbb_next_version }}/phpBB-{{ update_phpbb_next_version }}-patch.tar.bz2
     dest: "{{ update_phpbb_patch_dir.path }}/phpbb.tar.bz2"
     mode: "0644"
 
@@ -40,7 +40,7 @@
   failed_when:
     - not update_phpbb_patch_file.stat.exists
 
-- name: Extract phpBB3 files
+- name: Extract vendor directory
   ansible.builtin.unarchive:
     src: "{{ update_phpbb_patch_dir.path }}/phpbb.tar.bz2"
     dest: "{{ role_path }}/../../{{ update_phpbb_site }}"
@@ -51,4 +51,5 @@
   ansible.posix.patch:
     basedir: "{{ role_path }}/../../{{ update_phpbb_site }}"
     src: "{{ update_phpbb_patch_dir.path }}/phpBB-{{ update_phpbb_current_version }}_to_{{ update_phpbb_next_version }}.patch"
+    strip: 1
     state: present
