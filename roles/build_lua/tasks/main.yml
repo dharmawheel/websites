@@ -50,4 +50,5 @@
       semanager fcontext -a -t httpd_sys_script_exec_t "{{ build_lua_install_prefix }}/bin/lua";
       restorecon -R "{{ build_lua_install_prefix }}"
   changed_when: false
-  when: "selinux" in ansible_facts and ansible_facts["selinux"] and ansible_facts["selinux"].status != 'disabled'
+  when: |
+    "selinux" in ansible_facts and ansible_facts["selinux"] and ansible_facts["selinux"].status != "disabled"
