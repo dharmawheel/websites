@@ -41,8 +41,8 @@
     ansible.builtin.assert:
       that:
         - "'grpc' in php_modules.stdout"
-    fail_msg: "The PHP 'grpc' module is NOT loaded on this server despite installation steps having run"
-    success_msg: "The PHP 'grpc' module is loaded."
+      fail_msg: "The PHP 'grpc' module is NOT loaded on this server despite installation steps having run"
+      success_msg: "The PHP 'grpc' module is loaded."
 
 - name: Check if protobuf module is installed already
   ansible.builtin.shell: php -m | grep -i protobuf
@@ -72,5 +72,5 @@
     ansible.builtin.assert:
       that:
         - "'protobuf' in php_modules.stdout"
-    fail_msg: "The PHP 'protobuf' module is NOT loaded on this server despite installation steps having run"
-    success_msg: "The PHP 'protobuf' module is loaded."
+      fail_msg: "The PHP 'protobuf' module is NOT loaded on this server despite installation steps having run"
+      success_msg: "The PHP 'protobuf' module is loaded."
