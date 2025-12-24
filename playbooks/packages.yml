@@ -24,10 +24,15 @@
           - php-pear
           - ImageMagick
           - ImageMagick-devel
-          - gcc
           - make
           - readline-devel
           - amazon-ssm-agent
+          - gcc
+          - g++
+          - libtool
+          - autoconf
+          - cmake
+          - git
         state: present
     - name: Enable nginx
       ansible.builtin.systemd:
@@ -44,6 +49,9 @@
         name: amazon-ssm-agent
         state: started
         enabled: true
+    - name: Update pecl
+      ansible.builtin.command: pear channel-update pecl.php.net
+      changed_when: false
     - name: Install PHP redis
       community.general.pear:
         name: pecl/redis
