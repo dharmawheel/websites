@@ -18,7 +18,7 @@ variables {
 source "amazon-ebs" "dw-mono" {
   ami_name                    = "dw-mono-base-${formatdate("YYYYMMDD-hhmmss", timestamp())}"
   ami_description             = "All Dhamma sites"
-  instance_type               = "t4g.small"
+  instance_type               = "t4g.xlarge"
   region                      = "us-west-1"
   associate_public_ip_address = true
   vpc_id                      = "vpc-318dd655"
