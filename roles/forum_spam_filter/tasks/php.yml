@@ -14,63 +14,63 @@
   changed_when: false
 
 - name: Check if gRPC module is installed already
-  ansible.builtin.shell: php -m | grep -i grpc
-  register: grpc_module_check
+  ansible.builtin.shell: set -o pipefail && php -m | grep -i grpc
+  register: forum_spam_filter_grpc_module_check
   failed_when: false
   changed_when: false
 
 - name: Install gRPC PHP module
-  when: grpc_module_check.rc != 0
+  when: forum_spam_filter_grpc_module_check.rc != 0
   block:
-  - name: Install gRPC for PHP using pecl
-    community.general.pear:
-      name: pecl/grpc
-      state: present
-  - name: Add grpc.so to php.ini
-    ansible.builtin.copy:
-      content: "extension=grpc.so"
-      dest: /etc/php.d/99-grpc.ini
-      owner: root
-      group: root
-      mode: "0644"
-  - name: Get list of loaded PHP modules
-    ansible.builtin.command: php -m
-    register: php_modules
-    changed_when: false
-  - name: Validate that the gRPC module exists
-    ansible.builtin.assert:
-      that:
-        - "'grpc' in php_modules.stdout"
-      fail_msg: "The PHP 'grpc' module is NOT loaded on this server despite installation steps having run"
-      success_msg: "The PHP 'grpc' module is loaded."
+    - name: Install gRPC for PHP using pecl
+      community.general.pear:
+        name: pecl/grpc
+        state: present
+    - name: Add grpc.so to php.ini
+      ansible.builtin.copy:
+        content: "extension=grpc.so"
+        dest: /etc/php.d/99-grpc.ini
+        owner: root
+        group: root
+        mode: "0644"
+    - name: Get list of loaded PHP modules
+      ansible.builtin.command: php -m
+      register: forum_spam_filter_php_modules
+      changed_when: false
+    - name: Validate that the gRPC module exists
+      ansible.builtin.assert:
+        that:
+          - "'grpc' in forum_spam_filter_php_modules.stdout"
+        fail_msg: "The PHP 'grpc' module is NOT loaded on this server despite installation steps having run"
+        success_msg: "The PHP 'grpc' module is loaded."
 
 - name: Check if protobuf module is installed already
-  ansible.builtin.shell: php -m | grep -i protobuf
-  register: protobuf_module_check
+  ansible.builtin.shell: set -o pipefail && php -m | grep -i protobuf
+  register: forum_spam_filter_protobuf_module_check
   failed_when: false
   changed_when: false
 
 - name: Install protobuf PHP module
-  when: protobuf_module_check.rc != 0
+  when: forum_spam_filter_protobuf_module_check.rc != 0
   block:
-  - name: Install protobuf for PHP using pecl
-    community.general.pear:
-      name: pecl/protobuf
-      state: present
-  - name: Add protobuf.so to php.ini
-    ansible.builtin.copy:
-      content: "extension=protobuf.so"
-      dest: /etc/php.d/99-protobuf.ini
-      owner: root
-      group: root
-      mode: "0644"
-  - name: Get list of loaded PHP modules
-    ansible.builtin.command: php -m
-    register: php_modules
-    changed_when: false
-  - name: Validate that the protobuf module exists
-    ansible.builtin.assert:
-      that:
-        - "'protobuf' in php_modules.stdout"
-      fail_msg: "The PHP 'protobuf' module is NOT loaded on this server despite installation steps having run"
-      success_msg: "The PHP 'protobuf' module is loaded."
+    - name: Install protobuf for PHP using pecl
+      community.general.pear:
+        name: pecl/protobuf
+        state: present
+    - name: Add protobuf.so to php.ini
+      ansible.builtin.copy:
+        content: "extension=protobuf.so"
+        dest: /etc/php.d/99-protobuf.ini
+        owner: root
+        group: root
+        mode: "0644"
+    - name: Get list of loaded PHP modules
+      ansible.builtin.command: php -m
+      register: forum_spam_filter_php_modules
+      changed_when: false
+    - name: Validate that the protobuf module exists
+      ansible.builtin.assert:
+        that:
+          - "'protobuf' in forum_spam_filter_php_modules.stdout"
+        fail_msg: "The PHP 'protobuf' module is NOT loaded on this server despite installation steps having run"
+        success_msg: "The PHP 'protobuf' module is loaded."
