@@ -174,7 +174,7 @@ function recentIpsOfRegisteredUsers() {
     global $db;
 
     $result = [];
-    $sql = 'select p.poster_ip ip from ' . POSTS_TABLE . ' p inner join ' . USERS_TABLE . ' u on u.user_id = p.poster_id where u.group_id not in (1, 7) and p.post_time >= unix_timestamp() - 86400';
+    $sql = 'select distinct p.poster_ip ip from ' . POSTS_TABLE . ' p inner join ' . USERS_TABLE . ' u on u.user_id = p.poster_id where u.group_id not in (1, 7) and p.post_time >= unix_timestamp() - 86400';
     $sql_result = $db->sql_query($sql);
     while ($row = $db->sql_fetchrow($sql_result)) {
         if (isset($row['ip'])) {
