@@ -6,10 +6,18 @@
     owner: root
     mode: "0755"
 
+- name: Copy script
+  ansible.builtin.copy:
+    src: files/cf-whitelist.php
+    dest: "{{ cf_whitelist_dir }}/cf-whitelist.php"
+    owner: root
+    group: root
+    mode: "0644"
+
 - name: Render systemd service
   ansible.builtin.template:
     src: cf-whitelist.service.j2
-    dest: /etc/systemd/system/cf-whitelist.service.j2
+    dest: /etc/systemd/system/cf-whitelist.service
     owner: root
     group: root
     mode: "0644"
@@ -17,7 +25,7 @@
 - name: Render systemd timer
   ansible.builtin.template:
     src: cf-whitelist.timer.j2
-    dest: /etc/systemd/system/cf-whitelist.timer.j2
+    dest: /etc/systemd/system/cf-whitelist.timer
     owner: root
     group: root
     mode: "0644"
