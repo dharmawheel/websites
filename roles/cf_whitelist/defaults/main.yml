@@ -1,0 +1,3 @@
+cf_whitelist_dir: "/opt/cf-whitelist"
+cf_whitelist_script: "{{ cf_whitelist_dir }}/cf-whitelist.php"
+cf_whitelist_php_bin: "/usr/bin/php"

@@ -1,0 +1,10 @@
+[Unit]
+Description=Whitelist IPs of registered users in Cloudflare every day
+
+[Timer]
+OnCalendar=daily
+Persistent=true
+Unit=cf-whitelist.service
+
+[Install]
+WantedBy=timers.target

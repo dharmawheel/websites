@@ -148,3 +148,7 @@
         name: forum_spam_filter
       vars:
         forum_spam_filter_build_from_source: false
+
+    - name: Install cron script to whitelist registered users' IPs in Cloudflare
+      ansible.builtin.import_role:
+        name: cf_whitelist

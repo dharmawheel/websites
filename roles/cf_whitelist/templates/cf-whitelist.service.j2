@@ -1,0 +1,9 @@
+[Unit]
+Description=Whitelist IPs of registered users in Cloudflare
+
+[Service]
+Type=oneshot
+Environment=CLOUDFLARE_ACCOUNT_ID={{ cloudflare_account_id }}
+Environment=CLOUDFLARE_API_KEY={{ cloudflare_api_key }}
+ExecStart=/bin/bash -c 'cd /var/www/com_dhammawheel_www && {{ cf_whitelist_php_bin }} {{ cf_whitelist_script }} && cd /var/www/com_dharmapaths_www && {{ cf_whitelist_php_bin }} {{ cf_whitelist_script }} && cd /var/www/net_dharmawheel_www && {{ cf_whitelist_php_bin }} {{ cf_whitelist_script }}'
+User=root
