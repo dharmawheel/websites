@@ -24,7 +24,7 @@
     - gcc
     - nginx
   when:
-    - ansible_os_family == 'RedHat'
+    - ansible_facts["os_family"] == 'RedHat'
 - name: Build Lua 5.1.5
   ansible.builtin.shell:
     chdir: "{{ build_lua_temp_dir.path }}/lua-5.1.5"
@@ -50,4 +50,4 @@
       semanager fcontext -a -t httpd_sys_script_exec_t "{{ build_lua_install_prefix }}/bin/lua";
       restorecon -R "{{ build_lua_install_prefix }}"
   changed_when: false
-  when: ansible_selinux is defined and ansible_selinux and ansible_selinux.status != 'disabled'
+  when: "selinux" in ansible_facts and ansible_facts["selinux"] and ansible_facts["selinux"].status != 'disabled'

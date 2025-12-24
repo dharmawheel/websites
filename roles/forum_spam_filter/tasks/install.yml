@@ -1,7 +1,7 @@
 - name: Check that the architecture is supported
   ansible.builtin.assert:
     that:
-      - ansible_architecture in ['aarch64', 'x86_64']
+      - ansible_facts["architecture"] in ['aarch64', 'x86_64']
 
 - name: Copy pretrained model
   ansible.builtin.copy:
@@ -14,7 +14,7 @@
 
 - name: Download ONNX Runtime
   ansible.builtin.unarchive:
-    src: "{{ forum_spam_filter_onnx_runtime_release_aarch64 if ansible_architecture == 'aarch64' else forum_spam_filter_onnx_runtime_release_x86_64 }}"
+    src: "{{ forum_spam_filter_onnx_runtime_release_aarch64 if ansible_facts['architecture'] == 'aarch64' else forum_spam_filter_onnx_runtime_release_x86_64 }}"
     dest: "{{ forum_spam_filter_onnxruntime_prefix }}"
     remote_src: true
     extra_opts: [--strip-components=1]
