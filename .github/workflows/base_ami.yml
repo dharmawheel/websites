@@ -31,6 +31,9 @@ jobs:
         with:
           packer-version: ${{ env.PACKER_VERSION }}
 
+      - name: Initialize Packer
+        run: packer init ./dw-mono-base.pkr.hcl
+
       - name: Validate Packer
         run: packer validate dw-mono-base.pkr.hcl
 
