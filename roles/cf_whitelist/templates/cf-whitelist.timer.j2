@@ -3,6 +3,7 @@ Description=Whitelist IPs of registered users in Cloudflare every day
 
 [Timer]
 OnCalendar=daily
+RandomizedDelaySec=1h
 Persistent=true
 Unit=cf-whitelist.service
 
