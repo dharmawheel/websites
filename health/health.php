@@ -1,13 +1,13 @@
 <?php
 
 $virtualHosts = array(
-    array('host' => 'www.dhammawheel.com', 'path' => '/'),
-    array('host' => 'www.dharmawheel.net', 'path' => '/'),
-    array('host' => 'www.dharmapaths.com', 'path' => '/'),
-    array('host' => 'www.dhammawiki.com', 'path' => '/index.php?title=Special:Search'),
+    array('host' => 'www.dhammawheel.com', 'path' => '/', 'nfs_test_dir' => '/var/www/com_dhammawheel_www/images/avatars'),
+    array('host' => 'www.dharmawheel.net', 'path' => '/', 'nfs_test_dir' => '/var/www/net_dharmawheel_www'),
+    array('host' => 'www.dharmapaths.com', 'path' => '/', 'nfs_test_dir' => '/var/www/com_dharmapaths_www'),
+    array('host' => 'www.dhammawiki.com', 'path' => '/index.php?title=Special:Search', 'nfs_test_dir' => '/var/www/com_dhammawiki_www/images/archive'),
 );
 
-function checkVirtualHost($host, $path) {
+function checkVirtualHost($host, $path, $nfs_test_dir) {
     $url = "https://$host$path";
     $ch = curl_init($url);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -20,16 +20,19 @@ function checkVirtualHost($host, $path) {
     $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     curl_close($ch);
 
+    $nfs_writable = is_writable($nfs_test_dir);
+
     return [
         'host' => $host,
-        'status' => ($httpCode == 200) ? 'UP' : 'DOWN',
-        'httpCode' => $httpCode
+        'status' => ($httpCode == 200 && $nfs_writable) ? 'UP' : 'DOWN',
+	'httpCode' => $httpCode,
+	'nfs' => $nfs_writable
     ];
 }
 
 $results = [];
 foreach ($virtualHosts as $vh) {
-    $results[] = checkVirtualHost($vh['host'], $vh['path']);
+    $results[] = checkVirtualHost($vh['host'], $vh['path'], $vh['nfs_test_dir']);
 }
 
 $overallStatus = 'UP';
