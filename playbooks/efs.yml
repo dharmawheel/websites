@@ -44,3 +44,9 @@
         path: "/var/www/com_dhammawiki_www/images"
         fstype: nfs4
         opts: "{{ efs_opts }}"
+
+    - name: Allow nginx to access NFS
+      ansible.posix.seboolean:
+        name: httpd_use_nfs
+        state: true
+        persistent: true
