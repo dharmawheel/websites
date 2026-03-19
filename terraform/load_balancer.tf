@@ -30,14 +30,14 @@ resource "aws_lb_target_group" "dw_nlb_target_group" {
 
   health_check {
     enabled             = true
-    healthy_threshold   = 3
-    interval            = 10
+    healthy_threshold   = 2
+    interval            = 60
     matcher             = 200
     port                = 80
     path                = "/health"
     protocol            = "HTTP"
     timeout             = 3
-    unhealthy_threshold = 2
+    unhealthy_threshold = 10
   }
 
   port     = "443"
