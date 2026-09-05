@@ -1,0 +1,223 @@
+# playbooks/monitoring.yml
+- name: Install and configure monitoring
+  hosts: dw-mono
+  become: true
+  vars:
+    alert_email: "dhammawheel@dham.ma"
+    smtp_host: "smtp.example.com"
+    smtp_port: 587
+    smtp_user: "{{ monitoring_smtp_user }}"
+    smtp_pass: "{{ monitoring_smtp_pass }}"
+  tasks:
+    - name: Install Netdata via official kickstart
+      ansible.builtin.shell:
+        cmd: >
+          curl -fsSL https://get.netdata.cloud/kickstart.sh | bash -s --
+          --dont-wait
+          --no-updates
+          --stable-channel
+        creates: /usr/sbin/netdata
+
+    - name: Enable and start Netdata
+      ansible.builtin.systemd:
+        name: netdata
+        state: started
+        enabled: true
+
+    # --- Email alert configuration ---
+
+    - name: Install sendmail support
+      ansible.builtin.dnf:
+        name:
+          - postfix
+          - mailx
+          - cyrus-sasl-plain
+        state: present
+
+    - name: Configure Postfix as relay to smarthost
+      ansible.builtin.copy:
+        dest: /etc/postfix/main.cf.d/99-relay.cf
+        content: |
+          relayhost = [{{ smtp_host }}]:{{ smtp_port }}
+          smtp_use_tls = yes
+          smtp_sasl_auth_enable = yes
+          smtp_sasl_password_maps = hash:/etc/postfix/sasl_passwd
+          smtp_sasl_security_options = noanonymous
+          smtp_tls_CAfile = /etc/pki/tls/certs/ca-bundle.crt
+        mode: "0644"
+      notify: Restart Postfix
+
+    - name: Write SMTP credentials
+      ansible.builtin.copy:
+        dest: /etc/postfix/sasl_passwd
+        content: "[{{ smtp_host }}]:{{ smtp_port }} {{ smtp_user }}:{{ smtp_pass }}"
+        mode: "0600"
+      no_log: true
+      notify: Rebuild sasl_passwd db
+
+    - name: Configure Postfix relay (main.cf)
+      ansible.builtin.blockinfile:
+        path: /etc/postfix/main.cf
+        block: |
+          relayhost = [{{ smtp_host }}]:{{ smtp_port }}
+          smtp_use_tls = yes
+          smtp_sasl_auth_enable = yes
+          smtp_sasl_password_maps = hash:/etc/postfix/sasl_passwd
+          smtp_sasl_security_options = noanonymous
+          smtp_tls_CAfile = /etc/pki/tls/certs/ca-bundle.crt
+      notify: Restart Postfix
+
+    - name: Enable Postfix
+      ansible.builtin.systemd:
+        name: postfix
+        state: started
+        enabled: true
+
+    # --- Netdata alert routing ---
+
+    - name: Configure Netdata health alarm notification
+      ansible.builtin.copy:
+        dest: /etc/netdata/health_alarm_notify.conf
+        owner: netdata
+        group: netdata
+        mode: "0600"
+        content: |
+          # Email settings
+          SEND_EMAIL="YES"
+          DEFAULT_RECIPIENT_EMAIL="{{ alert_email }}"
+          EMAIL_SENDER="netdata@{{ ansible_fqdn }}"
+
+          # Disable other notification methods
+          SEND_SLACK="NO"
+          SEND_DISCORD="NO"
+          SEND_TELEGRAM="NO"
+          SEND_PAGERDUTY="NO"
+          SEND_OPSGENIE="NO"
+      notify: Restart Netdata
+
+    # --- Custom alert thresholds ---
+
+    - name: Configure CPU alert thresholds
+      ansible.builtin.copy:
+        dest: /etc/netdata/health.d/cpu_custom.conf
+        owner: netdata
+        group: netdata
+        mode: "0644"
+        content: |
+          alarm: cpu_sustained_high
+          on: system.cpu
+          lookup: average -10m unaligned of user,system,softirq,irq
+          units: %
+          every: 1m
+          warn: $this > 80
+          crit: $this > 95
+          delay: up 5m down 15m
+          summary: CPU usage sustained above threshold
+          info: Average CPU utilization over the last 10 minutes
+          to: sysadmin
+      notify: Restart Netdata
+
+    - name: Configure disk space alert
+      ansible.builtin.copy:
+        dest: /etc/netdata/health.d/disk_custom.conf
+        owner: netdata
+        group: netdata
+        mode: "0644"
+        content: |
+          alarm: disk_space_low
+          on: disk.space
+          lookup: min -1m unaligned of avail
+          calc: $this * 100 / ($this + $used)
+          units: %
+          every: 1m
+          warn: $this < 20
+          crit: $this < 10
+          delay: up 1m down 15m
+          summary: Disk space running low
+          info: Percentage of disk space available
+          to: sysadmin
+      notify: Restart Netdata
+
+    - name: Configure MariaDB service alert
+      ansible.builtin.copy:
+        dest: /etc/netdata/health.d/services_custom.conf
+        owner: netdata
+        group: netdata
+        mode: "0644"
+        content: |
+          alarm: mariadb_service_down
+          on: systemd.service_unit_state
+          class: Errors
+          component: Systemd
+          host labels: _os=linux
+          chart labels: unit_name=mariadb.service
+          lookup: max -5s unaligned of failed
+          units: state
+          every: 10s
+          crit: $this == 1
+          delay: down 1m
+          summary: MariaDB service is down
+          info: MariaDB systemd unit has entered failed state
+          to: sysadmin
+
+          alarm: nginx_service_down
+          on: systemd.service_unit_state
+          class: Errors
+          component: Systemd
+          host labels: _os=linux
+          chart labels: unit_name=nginx.service
+          lookup: max -5s unaligned of failed
+          units: state
+          every: 10s
+          crit: $this == 1
+          delay: down 1m
+          summary: nginx service is down
+          info: nginx systemd unit has entered failed state
+          to: sysadmin
+
+          alarm: phpfpm_service_down
+          on: systemd.service_unit_state
+          class: Errors
+          component: Systemd
+          host labels: _os=linux
+          chart labels: unit_name=php-fpm.service
+          lookup: max -5s unaligned of failed
+          units: state
+          every: 10s
+          crit: $this == 1
+          delay: down 1m
+          summary: PHP-FPM service is down
+          info: PHP-FPM systemd unit has entered failed state
+          to: sysadmin
+      notify: Restart Netdata
+
+    # --- Restrict Netdata dashboard to localhost ---
+
+    - name: Bind Netdata dashboard to localhost only
+      ansible.builtin.lineinfile:
+        path: /etc/netdata/netdata.conf
+        regexp: '^\s*bind to\s*='
+        line: "    bind to = 127.0.0.1"
+        insertafter: '^\[web\]'
+        create: true
+        owner: netdata
+        group: netdata
+        mode: "0644"
+      notify: Restart Netdata
+
+  handlers:
+    - name: Restart Netdata
+      ansible.builtin.systemd:
+        name: netdata
+        state: restarted
+
+    - name: Restart Postfix
+      ansible.builtin.systemd:
+        name: postfix
+        state: restarted
+
+    - name: Rebuild sasl_passwd db
+      ansible.builtin.command:
+        cmd: postmap /etc/postfix/sasl_passwd
+      changed_when: false
+      notify: Restart Postfix
