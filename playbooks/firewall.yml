@@ -1,0 +1,60 @@
+- name: Configure firewall
+  hosts: dw-mono
+  become: true
+  tasks:
+    - name: Ensure firewalld is installed and running
+      ansible.builtin.dnf:
+        name: firewalld
+        state: present
+
+    - name: Enable and start firewalld
+      ansible.builtin.systemd:
+        name: firewalld
+        state: started
+        enabled: true
+
+    - name: Allow SSH in drop zone
+      ansible.posix.firewalld:
+        service: ssh
+        zone: drop
+        permanent: true
+        immediate: true
+        state: enabled
+
+    - name: Set default zone to drop
+      ansible.builtin.command:
+        cmd: firewall-cmd --set-default-zone=drop
+      changed_when: false
+
+    - name: Fetch Cloudflare IPv4 ranges
+      ansible.builtin.uri:
+        url: https://www.cloudflare.com/ips-v4/
+        return_content: true
+      register: cf_ipv4
+
+    - name: Fetch Cloudflare IPv6 ranges
+      ansible.builtin.uri:
+        url: https://www.cloudflare.com/ips-v6/
+        return_content: true
+      register: cf_ipv6
+
+    - name: Build Cloudflare IP list
+      ansible.builtin.set_fact:
+        cloudflare_ips: "{{ cf_ipv4.content.strip().split('\n') + cf_ipv6.content.strip().split('\n') }}"
+
+    - name: Allow HTTPS from Cloudflare IPs
+      ansible.posix.firewalld:
+        rich_rule: "rule family='{{ 'ipv6' if ':' in item else 'ipv4' }}' source address='{{ item }}' port port='443' protocol='tcp' accept"
+        zone: drop
+        permanent: true
+        immediate: true
+        state: enabled
+      loop: "{{ cloudflare_ips }}"
+
+    - name: Allow loopback traffic
+      ansible.posix.firewalld:
+        rich_rule: "rule family='ipv4' source address='127.0.0.0/8' accept"
+        zone: drop
+        permanent: true
+        immediate: true
+        state: enabled

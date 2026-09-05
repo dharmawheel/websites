@@ -1,4 +1,3 @@
-# This playbook assumes that the playbook dw_mono_base.yml has already been run.
 - name: Check prerequisites
   hosts: dw-mono
   become: true
@@ -7,27 +6,37 @@
       ansible.builtin.assert:
         that:
           - ansible_facts["os_family"] == "RedHat"
-          - ansible_facts["distribution"] == "Amazon"
-          - ansible_facts["distribution_version"] == "2023"
-        msg: "This playbook is only compatible with Amazon Linux 2023"
+          - ansible_facts["distribution"] == "Rocky"
+          - ansible_facts["distribution_version"] == "10.1"
+        msg: "This playbook is only compatible with Rocky Linux 10.1"
     - name: Check that secrets are accessible
       ansible.builtin.assert:
         that:
           - dhammawheel_db_pass is defined
           - dharmawheel_db_pass is defined
           - dharmapaths_db_pass is defined
+          - dhammawiki_db_pass is defined
+          - mariadb_root_pass is defined
         msg: "Secrets file is missing required variables"
+- name: Configure firewall
+  ansible.builtin.import_playbook: firewall.yml
+- name: Configure SELinux
+  ansible.builtin.import_playbook: selinux.yml
+- name: Install packages
+  ansible.builtin.import_playbook: packages.yml
+- name: Install and configure MariaDB
+  ansible.builtin.import_playbook: mariadb.yml
+- name: Install and configure Redis
+  ansible.builtin.import_playbook: redis.yml
 - name: Copy application code
   ansible.builtin.import_playbook: apps.yml
-- name: Set up IPv6
-  ansible.builtin.import_playbook: ipv6.yml
 - name: Set up nginx
   ansible.builtin.import_playbook: nginx.yml
 - name: Set up PHP and php-fpm
   ansible.builtin.import_playbook: php.yml
-- name: Mount EFS filesystems
-  ansible.builtin.import_playbook: efs.yml
 - name: Run phpBB3 database migrations
   ansible.builtin.import_playbook: migrate.yml
-- name: Check health
+- name: Create backup script
+  ansible.builtin.import_playbook: backups.yml
+- name: Verify health
   ansible.builtin.import_playbook: verify.yml

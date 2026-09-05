@@ -20,43 +20,6 @@ jobs:
         with:
           lfs: true
 
-      - name: Set up AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-west-1
-
-      - name: Fetch base AMI ID
-        id: fetch_base_ami
-        run: |
-          BASE_AMI=$(aws ssm get-parameter --name /dw-mono/base-ami-id --query "Parameter.Value" --output text)
-          echo "AMI_ID=${BASE_AMI}" >> $GITHUB_OUTPUT
-
-      - name: Setup Packer
-        uses: hashicorp/setup-packer@main
-        with:
-          version: ${{ env.PACKER_VERSION }}
-
-      - name: Set up Terraform
-        uses: hashicorp/setup-terraform@v3
-        with:
-          terraform_version: ${{ env.TERRAFORM_VERSION }}
-
-      - name: Initialize Packer
-        run: packer init ./dw-mono.pkr.hcl
-
-      - name: Validate Packer
-        run: packer validate -var source_ami=${{ steps.fetch_base_ami.outputs.AMI_ID }} dw-mono.pkr.hcl
-
-      - name: Initialize Terraform
-        working-directory: ./terraform
-        run: terraform init
-
-      - name: Validate Terraform
-        working-directory: ./terraform
-        run: terraform validate
-
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
@@ -73,8 +36,7 @@ jobs:
           python -m venv .venv && \
             source .venv/bin/activate && \
             .venv/bin/python -m pip install --upgrade pip && \
-            .venv/bin/pip install ansible ansible-lint && \
-            .venv/bin/ansible-galaxy collection install community.general ansible.posix
+            .venv/bin/pip install ansible ansible-lint
 
       - name: Install Ansible Galaxy collections
         run: |
@@ -90,32 +52,3 @@ jobs:
           source .venv/bin/activate && \
             .venv/bin/ansible-lint --version && \
             .venv/bin/ansible-lint playbooks/
-
-      - name: Build AMI with Packer
-        id: packer_build
-        run: |
-          source .venv/bin/activate
-          packer build -var "source_ami=${{ steps.fetch_base_ami.outputs.AMI_ID }}" dw-mono.pkr.hcl
-          AMI_ID=$(jq -r '.builds[-1].artifact_id' dw_mono_manifest.json | cut -d':' -f2)
-          echo "AMI_ID=${AMI_ID}" >> $GITHUB_OUTPUT
-
-      - name: Clean up Ansible Vault password
-        if: always()
-        run: rm .vault_pass
-
-      - name: Terraform plan
-        working-directory: ./terraform
-        run: |
-          AMI_ID="${{ steps.packer_build.outputs.AMI_ID }}"
-          terraform plan -var ami_id=$AMI_ID -out=tfplan
-
-      - name: Terraform apply
-        working-directory: ./terraform
-        run: terraform apply -auto-approve tfplan
-
-      - name: Start instance refresh
-        working-directory: ./terraform
-        run: |
-          aws autoscaling start-instance-refresh \
-            --auto-scaling-group-name $(terraform output -raw autoscaling_group_name) \
-            --preferences MinHealthyPercentage=100,InstanceWarmup=30,StandbyInstances=Terminate

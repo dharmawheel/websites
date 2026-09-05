@@ -1,0 +1,64 @@
+- name: Configure SELinux policies
+  hosts: dw-mono
+  become: true
+  tasks:
+    - name: Install SELinux management tools
+      ansible.builtin.dnf:
+        name:
+          - policycoreutils-python-utils
+          - setools-console
+        state: present
+
+    - name: Allow nginx to connect to network (PHP-FPM, Redis)
+      ansible.posix.seboolean:
+        name: httpd_can_network_connect
+        state: true
+        persistent: true
+
+    - name: Allow nginx to connect to databases
+      ansible.posix.seboolean:
+        name: httpd_can_network_connect_db
+        state: true
+        persistent: true
+
+    - name: Allow PHP-FPM to send emails
+      ansible.posix.seboolean:
+        name: httpd_can_sendmail
+        state: true
+        persistent: true
+
+    - name: Allow nginx/PHP to execute scripts
+      ansible.posix.seboolean:
+        name: httpd_execmem
+        state: true
+        persistent: true
+
+    - name: Set SELinux context for /var/www (read-write for uploads)
+      ansible.builtin.command:
+        cmd: >
+          semanage fcontext -a -t httpd_sys_rw_content_t "/var/www(/.*)?"
+      register: selinux_fcontext_www
+      changed_when: selinux_fcontext_www.rc == 0
+      failed_when:
+        - selinux_fcontext_www.rc != 0
+        - "'already defined' not in selinux_fcontext_www.stderr"
+
+    - name: Apply SELinux context to /var/www
+      ansible.builtin.command:
+        cmd: restorecon -R /var/www
+      changed_when: false
+
+    - name: Set SELinux context for Lua installation
+      ansible.builtin.shell:
+        cmd: |
+          semanage fcontext -a -t httpd_sys_script_exec_t "/opt/lua5_1_5(/.*)?" || true
+          restorecon -R /opt/lua5_1_5 || true
+      changed_when: false
+
+    - name: Set SELinux context for spam filter
+      ansible.builtin.shell:
+        cmd: |
+          semanage fcontext -a -t bin_t "/opt/forum-spam-filter/rpc" || true
+          semanage fcontext -a -t lib_t "/opt/forum-spam-filter/onnxruntime/lib(/.*)?" || true
+          restorecon -R /opt/forum-spam-filter || true
+      changed_when: false

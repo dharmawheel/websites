@@ -1,0 +1,40 @@
+- name: Install and configure Redis
+  hosts: dw-mono
+  become: true
+  tasks:
+    - name: Install Redis
+      ansible.builtin.dnf:
+        name: valkey
+        state: present
+
+    - name: Configure Redis
+      ansible.builtin.copy:
+        dest: /etc/valkey/local.conf
+        content: |
+          bind 127.0.0.1
+          maxmemory 512mb
+          maxmemory-policy allkeys-lru
+          save 900 1
+          save 300 10
+        owner: valkey
+        group: valkey
+        mode: "0640"
+
+    - name: Include local config from main redis.conf
+      ansible.builtin.lineinfile:
+        path: /etc/valkey/valkey.conf
+        line: "include /etc/valkey/local.conf"
+        insertafter: EOF
+      notify: Restart Redis
+
+    - name: Enable and start Redis
+      ansible.builtin.systemd:
+        name: valkey
+        state: started
+        enabled: true
+
+  handlers:
+    - name: Restart Redis
+      ansible.builtin.systemd:
+        name: valkey
+        state: restarted

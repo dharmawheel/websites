@@ -3,18 +3,23 @@
     state: directory
     prefix: ffmpeg-static-
   register: ffmpeg_temp_dir
+  delegate_to: localhost
+  become: false
 
-- name: Download ffmpeg static binaries
+- name: Download ffmpeg static binaries locally
   ansible.builtin.get_url:
     url: "{{ ffmpeg_static_build_url }}"
     dest: "{{ ffmpeg_temp_dir.path }}/ffmpeg.tar.gz"
     mode: '0644'
+  delegate_to: localhost
+  run_once: true
+  become: false
 
 - name: Extract ffmpeg static binaries
   ansible.builtin.unarchive:
     src: "{{ ffmpeg_temp_dir.path }}/ffmpeg.tar.gz"
     dest: "/usr/local/"
-    remote_src: true
+    remote_src: false
     extra_opts:
       - "--strip-components=1"
     exclude:
@@ -31,7 +36,9 @@
     - ffprobe
     - ffplay
 
-- name: Remove temporary directory
+- name: Remove local temporary directory
+  delegate_to: localhost
+  run_once: true
   ansible.builtin.file:
     path: "{{ ffmpeg_temp_dir.path }}"
     state: absent

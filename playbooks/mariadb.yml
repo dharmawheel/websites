@@ -1,0 +1,100 @@
+- name: Install and configure MariaDB
+  hosts: dw-mono
+  become: true
+  tasks:
+    - name: Install MariaDB server
+      ansible.builtin.dnf:
+        name:
+          - mariadb-server
+          - mariadb
+          - python3-PyMySQL
+        state: present
+
+    - name: Enable and start MariaDB
+      ansible.builtin.systemd:
+        name: mariadb
+        state: started
+        enabled: true
+
+    - name: Remove anonymous users
+      community.mysql.mysql_user:
+        name: ""
+        host_all: true
+        login_unix_socket: /var/lib/mysql/mysql.sock
+        state: absent
+
+    - name: Remove test database
+      community.mysql.mysql_db:
+        name: test
+        login_unix_socket: /var/lib/mysql/mysql.sock
+        state: absent
+
+    - name: Create application databases
+      community.mysql.mysql_db:
+        name: "{{ item }}"
+        encoding: utf8mb4
+        collation: utf8mb4_unicode_ci
+        state: present
+        login_unix_socket: /var/lib/mysql/mysql.sock
+      loop:
+        - thedhamm_forum
+        - thedhamm_dharmawheel
+        - dharmapathsp
+        - dhammawiki
+
+    - name: Create database users
+      community.mysql.mysql_user:
+        name: "{{ item.user }}"
+        password: "{{ item.pass }}"
+        priv: "{{ item.db }}.*:ALL"
+        host: localhost
+        login_unix_socket: /var/lib/mysql/mysql.sock
+        state: present
+      loop:
+        - { db: thedhamm_forum, user: thedhamm_forumu, pass: "{{ dhammawheel_db_pass }}" }
+        - { db: thedhamm_dharmawheel, user: thedhamm_dharmau, pass: "{{ dharmawheel_db_pass }}" }
+        - { db: dharmapathsp, user: dharmapaths, pass: "{{ dharmapaths_db_pass }}" }
+        #- { db: dhammawiki, user: dhammawikiuser, pass: "{{ dhammawiki_db_pass }}" }
+      #no_log: true
+
+    - name: Configure MariaDB for performance
+      ansible.builtin.copy:
+        dest: /etc/my.cnf.d/99-custom.cnf
+        content: |
+          [mysqld]
+          # InnoDB
+          innodb_buffer_pool_size = 48G
+          innodb_buffer_pool_instances = 8
+          innodb_log_file_size = 2G
+          innodb_log_buffer_size = 64M
+          innodb_flush_log_at_trx_commit = 2
+          innodb_flush_method = O_DIRECT
+          innodb_io_capacity = 2000
+          innodb_io_capacity_max = 4000
+          innodb_read_io_threads = 4
+          innodb_write_io_threads = 4
+
+          # Connections & threads
+          max_connections = 200
+          thread_cache_size = 32
+
+          # Caches
+          table_open_cache = 4000
+          table_definition_cache = 2000
+          tmp_table_size = 256M
+          max_heap_table_size = 256M
+
+          # Character set
+          character-set-server = utf8mb4
+          collation-server = utf8mb4_unicode_ci
+
+          # Security
+          bind-address = 127.0.0.1
+        mode: "0644"
+      notify: Restart MariaDB
+
+  handlers:
+    - name: Restart MariaDB
+      ansible.builtin.systemd:
+        name: mariadb
+        state: restarted

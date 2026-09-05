@@ -1,0 +1,74 @@
+- name: Configure automated backups
+  hosts: dw-mono
+  become: true
+  vars:
+    backup_dir: /var/backups/dw-mono
+    backup_retention_days: 30
+  tasks:
+    - name: Create backup directory
+      ansible.builtin.file:
+        state: directory
+        path: "{{ backup_dir }}"
+        owner: root
+        group: root
+        mode: "0700"
+
+    - name: Install backup script
+      ansible.builtin.copy:
+        dest: /usr/local/bin/dw-backup.sh
+        mode: "0755"
+        content: |
+          #!/bin/bash
+          set -euo pipefail
+          BACKUP_DIR="{{ backup_dir }}"
+          DATE=$(date +%Y%m%d-%H%M%S)
+
+          mariadb-dump --all-databases --single-transaction \
+            --routines --triggers --hex-blob \
+            | gzip > "${BACKUP_DIR}/db-${DATE}.sql.gz"
+
+          tar czf "${BACKUP_DIR}/files-${DATE}.tar.gz" \
+            /var/www/com_dhammawheel_www/files \
+            /var/www/com_dhammawheel_www/images \
+            /var/www/net_dharmawheel_www/files \
+            /var/www/net_dharmawheel_www/images \
+            /var/www/com_dharmapaths_www/files \
+            /var/www/com_dharmapaths_www/images \
+            /var/www/com_dhammawiki_www/images
+
+          find "${BACKUP_DIR}" -name "*.gz" -mtime +{{ backup_retention_days }} -delete
+
+    - name: Create systemd service for backups
+      ansible.builtin.copy:
+        dest: /etc/systemd/system/dw-backup.service
+        content: |
+          [Unit]
+          Description=Daily database and file backup
+
+          [Service]
+          Type=oneshot
+          ExecStart=/usr/local/bin/dw-backup.sh
+        mode: "0644"
+
+    - name: Create timer unit
+      ansible.builtin.copy:
+        dest: /etc/systemd/system/dw-backup.timer
+        content: |
+          [Unit]
+          Description=Run dw-backup daily
+
+          [Timer]
+          OnCalendar=*-*-* 03:00:00
+          RandomizedDelaySec=30m
+          Persistent=true
+
+          [Install]
+          WantedBy=timers.target
+        mode: "0644"
+
+    - name: Enable backup timer
+      ansible.builtin.systemd:
+        name: dw-backup.timer
+        state: started
+        enabled: true
+        daemon_reload: true
