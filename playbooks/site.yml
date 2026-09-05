@@ -30,12 +30,14 @@
   ansible.builtin.import_playbook: redis.yml
 - name: Copy application code
   ansible.builtin.import_playbook: apps.yml
+  tags: apps
 - name: Set up nginx
   ansible.builtin.import_playbook: nginx.yml
 - name: Set up PHP and php-fpm
   ansible.builtin.import_playbook: php.yml
 - name: Run phpBB3 database migrations
   ansible.builtin.import_playbook: migrate.yml
+  tags: migrate
 - name: Create backup script
   ansible.builtin.import_playbook: backups.yml
 - name: Verify health
