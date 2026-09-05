@@ -21,6 +21,9 @@
 
 - name: Fetch phpBB3 patch files
   ansible.builtin.get_url:
+    http_agent: "curl/8.4.0"
+    headers:
+      User-Agent: "curl/8.4.0"
     url: >-
       https://download.phpbb.com/pub/release/{{ update_phpbb_next_version.split('.')[:2] | join('.') }}/{{ update_phpbb_next_version }}/phpBB-{{ update_phpbb_next_version }}-patch.tar.bz2
     dest: "{{ update_phpbb_patch_dir.path }}/phpbb.tar.bz2"
@@ -53,3 +56,4 @@
     src: "{{ update_phpbb_patch_dir.path }}/phpBB-{{ update_phpbb_current_version }}_to_{{ update_phpbb_next_version }}.patch"
     strip: 1
     state: present
+    ignore_whitespace: true
