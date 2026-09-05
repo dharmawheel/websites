@@ -117,7 +117,7 @@
         path: "/var/www/{{ item }}/images"
         owner: nginx
         group: nginx
-        mode: "0644"
+        mode: "0755"
       loop: "{{ phpbb3 + mediawiki }}"
 
     - name: Create empty /files directories for phpBB3 sites
