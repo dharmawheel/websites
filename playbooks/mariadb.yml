@@ -54,8 +54,8 @@
         - { db: thedhamm_forum, user: thedhamm_forumu, pass: "{{ dhammawheel_db_pass }}" }
         - { db: thedhamm_dharmawheel, user: thedhamm_dharmau, pass: "{{ dharmawheel_db_pass }}" }
         - { db: dharmapathsp, user: dharmapaths, pass: "{{ dharmapaths_db_pass }}" }
-        #- { db: dhammawiki, user: dhammawikiuser, pass: "{{ dhammawiki_db_pass }}" }
-      #no_log: true
+        - { db: dhammawiki, user: dhammawikiuser, pass: "{{ dhammawiki_db_pass }}" }
+      no_log: true
 
     - name: Configure MariaDB for performance
       ansible.builtin.copy:
