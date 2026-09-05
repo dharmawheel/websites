@@ -17,20 +17,20 @@
         enabled: true
 
     - name: Remove anonymous users
-      community.mysql.mysql_user:
+      ansible.mysql.mysql_user:
         name: ""
         host_all: true
         login_unix_socket: /var/lib/mysql/mysql.sock
         state: absent
 
     - name: Remove test database
-      community.mysql.mysql_db:
+      ansible.mysql.mysql_db:
         name: test
         login_unix_socket: /var/lib/mysql/mysql.sock
         state: absent
 
     - name: Create application databases
-      community.mysql.mysql_db:
+      ansible.mysql.mysql_db:
         name: "{{ item }}"
         encoding: utf8mb4
         collation: utf8mb4_unicode_ci
@@ -43,7 +43,7 @@
         - dhammawiki
 
     - name: Create database users
-      community.mysql.mysql_user:
+      ansible.mysql.mysql_user:
         name: "{{ item.user }}"
         password: "{{ item.pass }}"
         priv: "{{ item.db }}.*:ALL"
