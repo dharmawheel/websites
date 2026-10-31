@@ -77,62 +77,67 @@
 <!-- EVENT overall_header_body_before -->
 
 <div id="wrap" class="wrap">
-	<a id="top" class="top-anchor" accesskey="t"></a>
-	<div id="page-header">
-	  <div class="headerbar" role="banner">
-	    <!-- EVENT overall_header_headerbar_before -->
-	    <div class="inner">
+    <a id="top" class="top-anchor" accesskey="t"></a>
+    <div id="page-header">
+      <div class="headerbar" role="banner">
+        <!-- EVENT overall_header_headerbar_before -->
+        <div class="inner">
 
-	      <div id="site-description" class="site-description">
-		<a href="{% if U_SITE_HOME %}{{ U_SITE_HOME }}{% else %}{{ U_INDEX }}{% endif %}" title="{% if U_SITE_HOME %}{{ L_SITE_HOME }}{% else %}{{ L_INDEX }}{% endif %}">
-		  <img src="/styles/prosilver/theme/images/wheel4.png" alt="dharma wheel" />
-		</a>
-		<div>
-		  <h1>{SITENAME}</h1>
-		  <p>{SITE_DESCRIPTION}</p>
-		  <p class="skiplink"><a href="#start_here">{L_SKIP}</a></p>
-		</div>
-		<a href="{% if U_SITE_HOME %}{{ U_SITE_HOME }}{% else %}{{ U_INDEX }}{% endif %}" title="{% if U_SITE_HOME %}{{ L_SITE_HOME }}{% else %}{{ L_INDEX }}{% endif %}">
-		  <img src="/styles/prosilver/theme/images/religion-wheel.png" alt="wheel of religions for representing dharmapaths.com" />
-		</a>
-	      </div>
+          <div id="site-description" class="site-description">
+        <a href="{% if U_SITE_HOME %}{{ U_SITE_HOME }}{% else %}{{ U_INDEX }}{% endif %}" title="{% if U_SITE_HOME %}{{ L_SITE_HOME }}{% else %}{{ L_INDEX }}{% endif %}">
+          <img src="/styles/prosilver/theme/images/wheel4.png" alt="dharma wheel" />
+        </a>
+        <div>
+          <h1>{SITENAME}</h1>
+          <p>{SITE_DESCRIPTION}</p>
+          <p class="skiplink"><a href="#start_here">{L_SKIP}</a></p>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <a href="{% if U_SITE_HOME %}{{ U_SITE_HOME }}{% else %}{{ U_INDEX }}{% endif %}" title="{% if U_SITE_HOME %}{{ L_SITE_HOME }}{% else %}{{ L_INDEX }}{% endif %}">
+            <img src="/styles/prosilver/theme/images/triple_religion.png" alt="wheel of three dharmas representing dharmapaths.com" />
+          </a>
+          <a href="{% if U_SITE_HOME %}{{ U_SITE_HOME }}{% else %}{{ U_INDEX }}{% endif %}" title="{% if U_SITE_HOME %}{{ L_SITE_HOME }}{% else %}{{ L_INDEX }}{% endif %}">
+            <img src="/styles/prosilver/theme/images/religion-wheel.png" alt="wheel of religions for representing dharmapaths.com" />
+          </a>
+        </div>
+          </div>
 
-			<!-- EVENT overall_header_searchbox_before -->
-			<!-- IF S_DISPLAY_SEARCH and not S_IN_SEARCH -->
-			<div id="search-box" class="search-box search-header" role="search">
-				<form action="{U_SEARCH}" method="get" id="search">
-				<fieldset>
-					<input name="keywords" id="keywords" type="search" maxlength="128" title="{L_SEARCH_KEYWORDS}" class="inputbox search tiny" size="20" value="{SEARCH_WORDS}" placeholder="{L_SEARCH_MINI}" />
-					<button class="button button-search" type="submit" title="{L_SEARCH}">
-						<i class="icon fa-search fa-fw" aria-hidden="true"></i><span class="sr-only">{L_SEARCH}</span>
-					</button>
-					<a href="{U_SEARCH}" class="button button-search-end" title="{L_SEARCH_ADV}">
-						<i class="icon fa-cog fa-fw" aria-hidden="true"></i><span class="sr-only">{L_SEARCH_ADV}</span>
-					</a>
-					{S_SEARCH_HIDDEN_FIELDS}
-				</fieldset>
-				</form>
-			</div>
-			<!-- ENDIF -->
-			<!-- EVENT overall_header_searchbox_after -->
+            <!-- EVENT overall_header_searchbox_before -->
+            <!-- IF S_DISPLAY_SEARCH and not S_IN_SEARCH -->
+            <div id="search-box" class="search-box search-header" role="search">
+                <form action="{U_SEARCH}" method="get" id="search">
+                <fieldset>
+                    <input name="keywords" id="keywords" type="search" maxlength="128" title="{L_SEARCH_KEYWORDS}" class="inputbox search tiny" size="20" value="{SEARCH_WORDS}" placeholder="{L_SEARCH_MINI}" />
+                    <button class="button button-search" type="submit" title="{L_SEARCH}">
+                        <i class="icon fa-search fa-fw" aria-hidden="true"></i><span class="sr-only">{L_SEARCH}</span>
+                    </button>
+                    <a href="{U_SEARCH}" class="button button-search-end" title="{L_SEARCH_ADV}">
+                        <i class="icon fa-cog fa-fw" aria-hidden="true"></i><span class="sr-only">{L_SEARCH_ADV}</span>
+                    </a>
+                    {S_SEARCH_HIDDEN_FIELDS}
+                </fieldset>
+                </form>
+            </div>
+            <!-- ENDIF -->
+            <!-- EVENT overall_header_searchbox_after -->
 
-			</div>
-			<!-- EVENT overall_header_headerbar_after -->
-		</div>
-		<!-- EVENT overall_header_navbar_before -->
-		<!-- INCLUDE navbar_header.html -->
-	</div>
+            </div>
+            <!-- EVENT overall_header_headerbar_after -->
+        </div>
+        <!-- EVENT overall_header_navbar_before -->
+        <!-- INCLUDE navbar_header.html -->
+    </div>
 
-	<!-- EVENT overall_header_page_body_before -->
+    <!-- EVENT overall_header_page_body_before -->
 
-	<a id="start_here" class="anchor"></a>
-	<div id="page-body" class="page-body" role="main">
-		<!-- IF S_BOARD_DISABLED and S_USER_LOGGED_IN and (U_MCP or U_ACP) -->
-		<div id="information" class="rules">
-			<div class="inner">
-				<strong>{L_INFORMATION}{L_COLON}</strong> {L_BOARD_DISABLED}
-			</div>
-		</div>
-		<!-- ENDIF -->
+    <a id="start_here" class="anchor"></a>
+    <div id="page-body" class="page-body" role="main">
+        <!-- IF S_BOARD_DISABLED and S_USER_LOGGED_IN and (U_MCP or U_ACP) -->
+        <div id="information" class="rules">
+            <div class="inner">
+                <strong>{L_INFORMATION}{L_COLON}</strong> {L_BOARD_DISABLED}
+            </div>
+        </div>
+        <!-- ENDIF -->
 
-		<!-- EVENT overall_header_content_before -->
+        <!-- EVENT overall_header_content_before -->
